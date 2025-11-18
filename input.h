@@ -6,5 +6,6 @@ void keyboardUp(unsigned char key, int x, int y);
 void mouseMotion(int x, int y);
 void atualizaCentroJanela(int w, int h);
 void atualizaMovimento();
+void altFullScreen();
 
 #endif

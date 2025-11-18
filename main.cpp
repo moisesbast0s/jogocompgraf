@@ -1,5 +1,6 @@
 #include <GL/glut.h>
 #include <math.h>
+#include <cstdio>
 #include "scene.h"
 #include "input.h"
 
@@ -11,6 +12,10 @@ float camY = 1.5f;
 float camZ = 25.0f;
 float yaw = 0.0f;
 float pitch = 0.0f;
+
+int fps = 0;
+int frameCount = 0;
+int previousTime = 0;
 
 void display()
 {
@@ -35,6 +40,20 @@ void display()
     desenhaPiramideDegraus();
 
     glutSwapBuffers();
+
+    frameCount++;
+    int currentTime = glutGet(GLUT_ELAPSED_TIME);
+
+    if (currentTime - previousTime > 1000) // passou 1 segundo
+    {
+        fps = frameCount;
+        frameCount = 0;
+        previousTime = currentTime;
+
+        char titulo[64];
+        sprintf(titulo, "Cena FPS - %d FPS", fps);
+        glutSetWindowTitle(titulo);
+    }
 }
 
 void reshape(int w, int h)
@@ -92,7 +111,7 @@ int main(int argc, char **argv)
 
     glutTimerFunc(0, timer, 0);
 
-    glutFullScreen();
+    // glutFullScreen();
     glutMainLoop();
     return 0;
 }

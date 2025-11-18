@@ -2,6 +2,8 @@
 #include <math.h>
 #include "scene.h"
 
+#include <cstdio>
+
 static int centerX = 0;
 static int centerY = 0;
 
@@ -16,10 +18,38 @@ static bool keyA = false;
 static bool keyS = false;
 static bool keyD = false;
 
+bool fullScreen = false;
+int janelaX = 100, janelaY = 100;
+int janelaW = 1920, janelaH = 1080;
+
 void atualizaCentroJanela(int w, int h)
 {
     centerX = w / 2;
     centerY = h / 2;
+}
+
+void altFullScreen()
+{
+
+    printf("entrou");
+    if (!fullScreen)
+    {
+        // salvar tamanho e posição atuais
+        janelaX = glutGet(GLUT_WINDOW_X);
+        janelaY = glutGet(GLUT_WINDOW_Y);
+        janelaW = glutGet(GLUT_WINDOW_WIDTH);
+        janelaH = glutGet(GLUT_WINDOW_HEIGHT);
+
+        glutFullScreen(); // entra no fullscreen
+        fullScreen = true;
+    }
+    else
+    {
+        glutReshapeWindow(janelaW, janelaH);
+        glutPositionWindow(janelaX, janelaY);
+
+        fullScreen = false;
+    }
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -27,16 +57,24 @@ void keyboard(unsigned char key, int x, int y)
     switch (key)
     {
     case 'w':
-    case 'W': keyW = true; break;
+    case 'W':
+        keyW = true;
+        break;
 
     case 's':
-    case 'S': keyS = true; break;
+    case 'S':
+        keyS = true;
+        break;
 
     case 'a':
-    case 'A': keyA = true; break;
+    case 'A':
+        keyA = true;
+        break;
 
     case 'd':
-    case 'D': keyD = true; break;
+    case 'D':
+        keyD = true;
+        break;
 
     case 27: // ESC
         std::exit(0);
@@ -49,16 +87,29 @@ void keyboardUp(unsigned char key, int x, int y)
     switch (key)
     {
     case 'w':
-    case 'W': keyW = false; break;
+    case 'W':
+        keyW = false;
+        break;
 
     case 's':
-    case 'S': keyS = false; break;
+    case 'S':
+        keyS = false;
+        break;
 
     case 'a':
-    case 'A': keyA = false; break;
+    case 'A':
+        keyA = false;
+        break;
 
     case 'd':
-    case 'D': keyD = false; break;
+    case 'D':
+        keyD = false;
+        break;
+    }
+
+    if ((key == 13 || key == '\r') && (glutGetModifiers() & GLUT_ACTIVE_ALT))
+    {
+        altFullScreen();
     }
 }
 
@@ -67,31 +118,34 @@ void atualizaMovimento()
     float passo = 0.15f; // pode ajustar a velocidade aqui
 
     float radYaw = yaw * M_PI / 180.0f;
-    float dirX   = std::sin(radYaw);
-    float dirZ   = -std::cos(radYaw);
+    float dirX = std::sin(radYaw);
+    float dirZ = -std::cos(radYaw);
 
     // vetor perpendicular pra strafe
-    float strafeX =  dirZ;
+    float strafeX = dirZ;
     float strafeZ = -dirX;
 
-    if (keyW) { // frente
+    if (keyW)
+    { // frente
         camX += dirX * passo;
         camZ += dirZ * passo;
     }
-    if (keyS) { // trás
+    if (keyS)
+    { // trás
         camX -= dirX * passo;
         camZ -= dirZ * passo;
     }
-    if (keyA) { // strafe esquerda
+    if (keyA)
+    { // strafe esquerda
         camX += strafeX * passo;
         camZ += strafeZ * passo;
     }
-    if (keyD) { // strafe direita
+    if (keyD)
+    { // strafe direita
         camX -= strafeX * passo;
         camZ -= strafeZ * passo;
     }
 }
-
 
 void mouseMotion(int x, int y)
 {
