@@ -2,8 +2,6 @@
 #include <math.h>
 #include "scene.h"
 
-#include <cstdio>
-
 static int centerX = 0;
 static int centerY = 0;
 
@@ -30,8 +28,8 @@ void atualizaCentroJanela(int w, int h)
 
 void altFullScreen()
 {
+    firstMouse = true;
 
-    printf("entrou");
     if (!fullScreen)
     {
         // salvar tamanho e posição atuais
