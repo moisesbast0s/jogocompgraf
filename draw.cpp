@@ -5,13 +5,15 @@
 #include <cstdio>
 
 #define NUM_TORRES 5
-#define RAIO 10.0f // raio das torres ao redor do centro
+#define RAIO 15.0f // raio das torres ao redor do centro
 
 extern GLuint texChao;
 extern GLuint texTorre;
 extern GLuint texDegrau;
 extern GLuint texEsfera;
+extern GLuint texLava;
 extern GLuint progEsfera;
+extern GLuint progLava;
 
 static void desenhaLosango(float altura)
 {
@@ -183,8 +185,56 @@ void desenhaPiramideDegraus()
     float alturaDegrau = 0.5f;
     float tamanhoBase = 6.0f;
     float reducao = 0.65f;
+    float raioLava = 12.0f;
+    float elevacao = 0.001f;
+    int segmentos = 64;     // mais = círculo mais suave
+    float tilesLava = 6.0f; // quantas vezes a textura se repete
 
     glPushMatrix();
+
+    // Degrau 0
+    glUseProgram(progLava);
+
+    GLint locTimeLava = glGetUniformLocation(progLava, "uTime");
+    GLint locStrLava = glGetUniformLocation(progLava, "uStrength");
+    GLint locScrollLava = glGetUniformLocation(progLava, "uScroll");
+    GLint locHeatLava = glGetUniformLocation(progLava, "uHeat");
+    GLint locTexLava = glGetUniformLocation(progLava, "uTexture");
+
+    glUniform1f(locTimeLava, tempoEsfera);
+    glUniform1f(locStrLava, 1.0f);
+    glUniform2f(locScrollLava, 0.1f, 0.0f);
+    glUniform1f(locHeatLava, 0.5f);
+
+    glBindTexture(GL_TEXTURE_2D, texLava);
+    glUniform1i(locTexLava, 0);
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_TRIANGLE_FAN);
+
+    // Centro do círculo
+    glTexCoord2f(0.5f, 0.5f);
+
+    glVertex3f(0.0f, elevacao, 0.0f);
+
+    for (int i = 0; i <= segmentos; i++)
+    {
+        float ang = (float)i / segmentos * 2.0f * M_PI;
+        float x = cosf(ang) * raioLava;
+        float z = sinf(ang) * raioLava;
+
+        // UV radial
+        float u = 0.5f + cosf(ang) * 0.5f * tilesLava;
+        float v = 0.5f + sinf(ang) * 0.5f * tilesLava;
+
+        glTexCoord2f(u, v);
+        glVertex3f(x, elevacao, z);
+    }
+
+    glEnd();
+
+    glUseProgram(0);
 
     // vamos usar um cubo unitário de -0.5 a 0.5
     float half = 0.5f;
@@ -400,21 +450,21 @@ void desenhaPiramideDegraus()
     glUseProgram(progEsfera);
 
     // uniforms básicos
-    GLint locTime = glGetUniformLocation(progEsfera, "uTime");
-    GLint locStr = glGetUniformLocation(progEsfera, "uStrength");
-    GLint locSpeed = glGetUniformLocation(progEsfera, "uSpeed");
-    GLint locTex = glGetUniformLocation(progEsfera, "uTexture");
+    GLint locTimeBlood = glGetUniformLocation(progEsfera, "uTime");
+    GLint locStrBlood = glGetUniformLocation(progEsfera, "uStrength");
+    GLint locSpeedBlood = glGetUniformLocation(progEsfera, "uSpeed");
+    GLint locTexBlood = glGetUniformLocation(progEsfera, "uTexture");
 
-    glUniform1f(locTime, tempoEsfera);
-    glUniform1f(locStr, 1.0f);
-    glUniform2f(locSpeed, 3.0f, 1.7f);
+    glUniform1f(locTimeBlood, tempoEsfera);
+    glUniform1f(locStrBlood, 1.0f);
+    glUniform2f(locSpeedBlood, 3.0f, 1.7f);
 
     glPushMatrix();
     glTranslatef(0.0f, topoDegrausY + raioEsfera + 0.2f, 0.0f);
     glRotatef(anguloEsfera, 1.0f, 1.0f, 0.0f);
 
     glBindTexture(GL_TEXTURE_2D, texEsfera);
-    glUniform1i(locTex, 0);
+    glUniform1i(locTexBlood, 0);
 
     // Ajuste da escala da textura na esfera
     glMatrixMode(GL_TEXTURE);

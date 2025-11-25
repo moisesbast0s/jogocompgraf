@@ -25,9 +25,9 @@ void main()
     // amostra a textura
     vec4 baseColor = texture2D(uTexture, uvDistorted);
 
-    // deixa um pouco mais azul e “molhado”
+    // deixa um pouco mais vermelho e molhado
     vec3 waterTint = vec3(0.3, 0.0, 0.0);
-    vec3 finalColor = mix(baseColor.rgb, waterTint, 0.5);
+    vec3 finalColor = mix(baseColor.rgb, waterTint, 0.25);
 
     // leve “brilho” dependendo da direção da onda
     float highlight = 0.3 * abs(wave1 * wave2);

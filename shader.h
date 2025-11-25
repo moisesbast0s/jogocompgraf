@@ -3,6 +3,6 @@
 
 #include <GL/glew.h>
 
-GLuint criaWaterShader(const char* vertPath, const char* fragPath);
+GLuint criaShader(const char* vertPath, const char* fragPath);
 
 #endif

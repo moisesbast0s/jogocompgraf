@@ -37,9 +37,9 @@ std::string leArquivo(const char *caminho)
     return ss.str();
 }
 
-GLuint criaWaterShader(const char *vertPath, const char *fragPath)
+GLuint criaShader(const char *vertPath, const char *fragPath)
 {
-    GLuint waterProgram = 0;
+    GLuint program = 0;
 
     // lê código-fonte dos arquivos
     std::string vsCode = leArquivo(vertPath);
@@ -60,18 +60,18 @@ GLuint criaWaterShader(const char *vertPath, const char *fragPath)
     GLuint fs = compilaShader(GL_FRAGMENT_SHADER, fsSrc);
 
     // cria e linka o programa
-    waterProgram = glCreateProgram();
-    glAttachShader(waterProgram, vs);
-    glAttachShader(waterProgram, fs);
+    program = glCreateProgram();
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
 
-    glLinkProgram(waterProgram);
+    glLinkProgram(program);
 
     GLint ok = 0;
-    glGetProgramiv(waterProgram, GL_LINK_STATUS, &ok);
+    glGetProgramiv(program, GL_LINK_STATUS, &ok);
     if (!ok)
     {
         char log[1024];
-        glGetProgramInfoLog(waterProgram, 1024, nullptr, log);
+        glGetProgramInfoLog(program, 1024, nullptr, log);
         printf("Erro ao linkar programa water:\n%s\n", log);
         std::exit(1);
     }
@@ -80,5 +80,5 @@ GLuint criaWaterShader(const char *vertPath, const char *fragPath)
     glDeleteShader(vs);
     glDeleteShader(fs);
 
-     return waterProgram;
+     return program;
 }
