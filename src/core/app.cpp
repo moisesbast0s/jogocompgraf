@@ -19,7 +19,6 @@ static void reshapeCb(int w, int h)
 {
     if (h == 0)
         h = 1;
-    float a = (float)w / (float)h;
 
     glViewport(0, 0, w, h);
 
