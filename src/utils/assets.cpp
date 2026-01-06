@@ -13,25 +13,24 @@ bool loadAssets(GameAssets &a)
     a.texParedeInterna = carregaTextura("assets/060.png");
     a.texTeto = carregaTextura("assets/081.png");
 
-    a.texSkyRight = carregaTextura("assets/sky_gray/sky_left.png");
-    a.texSkyLeft = carregaTextura("assets/sky_gray/sky_left.png");
-    a.texSkyTop = carregaTextura("assets/sky_gray/sky_top.png");
-    a.texSkyBottom = carregaTextura("assets/sky_gray/sky_bottom.png");
-    a.texSkyFront = carregaTextura("assets/sky_gray/sky_left.png");
-    a.texSkyBack = carregaTextura("assets/sky_gray/sky_left.png");
+    a.texSkyRight = carregaTextura("assets/sky_red/sky_left.png");
+    a.texSkyLeft = carregaTextura("assets/sky_red/sky_right.png");
+    a.texSkyTop = carregaTextura("assets/sky_red/sky_top.png");
+    a.texSkyBottom = carregaTextura("assets/sky_red/sky_bottom.png");
+    a.texSkyFront = carregaTextura("assets/sky_red/sky_front.png");
+    a.texSkyBack = carregaTextura("assets/sky_red/sky_back.png");
 
     a.progSangue = criaShader("shaders/blood.vert", "shaders/blood.frag");
     a.progLava = criaShader("shaders/lava.vert", "shaders/lava.frag");
 
-   if (!a.texChao || !a.texParede || !a.texSangue || !a.texLava ||
-    !a.texChaoInterno || !a.texParedeInterna || !a.texTeto ||
-    !a.texSkyRight || !a.texSkyLeft || !a.texSkyTop || !a.texSkyBottom || !a.texSkyFront || !a.texSkyBack ||
-    !a.progSangue || !a.progLava)
-{
-    std::printf("ERRO: falha ao carregar algum asset.\n");
-    return false;
-}
-
+    if (!a.texChao || !a.texParede || !a.texSangue || !a.texLava ||
+        !a.texChaoInterno || !a.texParedeInterna || !a.texTeto ||
+        !a.texSkyRight || !a.texSkyLeft || !a.texSkyTop || !a.texSkyBottom || !a.texSkyFront || !a.texSkyBack ||
+        !a.progSangue || !a.progLava)
+    {
+        std::printf("ERRO: falha ao carregar algum asset.\n");
+        return false;
+    }
 
     return true;
 }

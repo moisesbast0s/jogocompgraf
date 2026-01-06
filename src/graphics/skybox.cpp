@@ -15,7 +15,7 @@ static void drawSkyFace(float s, int face, GLuint tex)
     glBindTexture(GL_TEXTURE_2D, tex);
 
     const float vTop = 0.0f;     // parte de cima da imagem
-    const float vBottom = 1.5f; // "sobe" o chão do skybox (ajuste aqui)
+    const float vBottom = 2.0f; // "sobe" o chão do skybox (ajuste aqui)
 
     glBegin(GL_QUADS);
 
