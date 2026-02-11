@@ -6,6 +6,52 @@
 
 constexpr int MAX_MAGAZINE = 12;
 
+// Ajuste fino: raio do hitbox do inimigo no chão (mundo XZ)
+static constexpr float HIT_RADIUS = 0.55f;
+
+// Ajuste fino: alcance máximo do tiro no mundo
+static constexpr float MAX_RANGE  = 17.0f;
+
+static bool rayCircleIntersectXZ(
+    float ox, float oz,     // origem do raio
+    float dx, float dz,     // direção NORMALIZADA
+    float cx, float cz,     // centro do inimigo
+    float r,                // raio da hitbox
+    float &outT             // distância ao longo do raio
+)
+{
+    // vetor da origem até o centro
+    float fx = cx - ox;
+    float fz = cz - oz;
+
+    // projeção no raio
+    float proj = fx * dx + fz * dz;
+    if (proj < 0.0f)
+        return false; // inimigo atrás
+
+    // ponto mais próximo no raio
+    float px = ox + dx * proj;
+    float pz = oz + dz * proj;
+
+    // distância do centro ao ponto mais próximo
+    float ex = cx - px;
+    float ez = cz - pz;
+    float d2 = ex * ex + ez * ez;
+
+    float r2 = r * r;
+    if (d2 > r2)
+        return false; // não cruza o círculo
+
+    // calcula ponto de entrada na circunferência (o mais próximo)
+    float thc = std::sqrt(r2 - d2);
+    float t0 = proj - thc; // entrada
+    float t1 = proj + thc; // saída
+
+    // se estiver dentro do círculo, t0 pode ser negativo
+    outT = (t0 >= 0.0f) ? t0 : t1;
+    return outT >= 0.0f;
+}
+
 void playerTryReload()
 {
     auto &g = gameContext();
@@ -43,46 +89,60 @@ void playerTryAttack()
     g.weapon.state = WeaponState::W_FIRE_1;
     g.weapon.timer = 0.08f;
 
-    for (auto &en : lvl.enemies)
+    // 1) raio sai do centro da visão do player (yaw)
+    float radYaw = yaw * 3.14159f / 180.0f;
+    float dirX = std::sin(radYaw);
+    float dirZ = -std::cos(radYaw);
+
+    // normaliza direção
+    float len = std::sqrt(dirX * dirX + dirZ * dirZ);
+    if (len <= 0.0f)
+        return;
+    dirX /= len;
+    dirZ /= len;
+
+    // 2) procura o inimigo mais próximo que o raio intersecta
+    int bestIdx = -1;
+    float bestT = MAX_RANGE;
+
+    for (int i = 0; i < (int)lvl.enemies.size(); ++i)
     {
+        auto &en = lvl.enemies[i];
         if (en.state == STATE_DEAD)
             continue;
 
-        float dx = en.x - camX;
-        float dz = en.z - camZ;
-        float dist = std::sqrt(dx * dx + dz * dz);
-        if (dist < 17.0f)
+        float tHit = 0.0f;
+        if (rayCircleIntersectXZ(camX, camZ, dirX, dirZ, en.x, en.z, HIT_RADIUS, tHit))
         {
-            float radYaw = yaw * 3.14159f / 180.0f;
-            float camDirX = std::sin(radYaw);
-            float camDirZ = -std::cos(radYaw);
-
-            float toEnemyX = dx / dist;
-            float toEnemyZ = dz / dist;
-
-            float dot = camDirX * toEnemyX + camDirZ * toEnemyZ;
-
-            if (dot > 0.6f)
+            if (tHit <= bestT)
             {
-                en.hp -= 30;
-                en.hurtTimer = 0.5f;
-
-                if (en.hp <= 0)
-                {
-                    en.state = STATE_DEAD;
-                    en.respawnTimer = 15.0f;
-
-                    Item drop;
-                    drop.type = ITEM_AMMO;
-                    drop.x = en.x;
-                    drop.z = en.z;
-                    drop.active = true;
-                    drop.respawnTimer = 0.0f;
-
-                    lvl.items.push_back(drop);
-                }
-                return;
+                bestT = tHit;
+                bestIdx = i;
             }
+        }
+    }
+
+    // 3) se acertou alguém, aplica dano; se não, não faz nada
+    if (bestIdx >= 0)
+    {
+        auto &en = lvl.enemies[bestIdx];
+
+        en.hp -= 30;
+        en.hurtTimer = 0.5f;
+
+        if (en.hp <= 0)
+        {
+            en.state = STATE_DEAD;
+            en.respawnTimer = 15.0f;
+
+            Item drop;
+            drop.type = ITEM_AMMO;
+            drop.x = en.x;
+            drop.z = en.z;
+            drop.active = true;
+            drop.respawnTimer = 0.0f;
+
+            lvl.items.push_back(drop);
         }
     }
 }
