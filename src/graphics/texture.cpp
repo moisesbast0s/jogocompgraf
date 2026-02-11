@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "utils/stb_image.h"
-
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <cstdio>
 

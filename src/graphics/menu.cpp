@@ -1,6 +1,7 @@
 #include "graphics/menu.h"
 #include "graphics/ui_text.h"
 #include "graphics/fire_particles.h"
+#include <GL/glew.h>
 #include <GL/glut.h>
 
 static void begin2D(int w, int h)

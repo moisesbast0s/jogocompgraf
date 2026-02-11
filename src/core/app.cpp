@@ -4,6 +4,7 @@
 #include "core/game.h"
 #include "core/config.h"
 
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <GL/glu.h>
 

@@ -1,4 +1,5 @@
 #include "graphics/ui_text.h"
+#include <GL/glew.h>
 #include <GL/glut.h>
 
 void uiDrawStrokeText(float x, float y, const char* text, float scale)

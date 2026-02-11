@@ -23,6 +23,7 @@ struct RenderAssets
 {
     GLuint texChao = 0, texParede = 0, texSangue = 0, texLava = 0;
     GLuint texChaoInterno = 0, texParedeInterna = 0, texTeto = 0, texSkydome = 0;
+    // GLuint texSkydome=0;
 
     GLuint texEnemies[5] = {0};
     GLuint texEnemiesRage[5] = {0};

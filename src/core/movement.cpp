@@ -1,14 +1,17 @@
-#include <GL/glut.h>
 #include <cmath>
+#include "core/game.h"
 
 #include "core/movement.h"
 #include "input/keystate.h"
 #include "core/camera.h"
-#include "core/game.h"
+
 #include "core/config.h"
 #include "level/levelmetrics.h"
 #include "core/camera.h"
 #include "core/window.h"
+
+#include <GL/glew.h>
+#include <GL/glut.h>
 
 static bool isWallTile(int tx, int tz)
 {

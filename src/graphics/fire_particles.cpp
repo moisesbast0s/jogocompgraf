@@ -1,5 +1,6 @@
 #include "graphics/fire_particles.h"
-#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
 #include <cstdlib>
 
 void fireInit(FireSystem& fs)

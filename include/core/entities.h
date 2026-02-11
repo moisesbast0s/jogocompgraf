@@ -1,5 +1,13 @@
 #pragma once
 
+bool isWalkable(float x, float z);
+void updateEntities(float dt);
+
+// Configurações da IA
+const float ENEMY_SPEED = 2.5f;
+const float ENEMY_VIEW_DIST = 15.0f;
+const float ENEMY_ATTACK_DIST = 1.5f;
+
 enum EnemyState
 {
     STATE_IDLE,

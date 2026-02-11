@@ -1,5 +1,6 @@
 #include "graphics/hud.h"
 #include "graphics/ui_text.h"
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <string>
 #include <cstdlib>
