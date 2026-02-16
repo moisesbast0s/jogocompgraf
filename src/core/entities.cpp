@@ -25,6 +25,25 @@ bool isWalkable(float x, float z)
     return true;
 }
 
+// Retorna o tile em que o jogador está
+char getTileAtPlayer(float x, float z)
+{
+    auto& lvl = gameLevel();
+    float tile = lvl.metrics.tile;
+    float offX = lvl.metrics.offsetX;
+    float offZ = lvl.metrics.offsetZ;
+
+    int tx = (int)((x - offX) / tile);
+    int tz = (int)((z - offZ) / tile);
+
+    const auto& data = lvl.map.data();
+
+    if (tz < 0 || tz >= (int)data.size()) return '1';
+    if (tx < 0 || tx >= (int)data[tz].size()) return '1';
+
+    return data[tz][tx];
+}
+
 void updateEntities(float dt)
 {
     auto& g = gameContext();

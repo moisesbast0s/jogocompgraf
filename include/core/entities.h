@@ -1,6 +1,7 @@
 #pragma once
 
 bool isWalkable(float x, float z);
+char getTileAtPlayer(float x, float z);
 void updateEntities(float dt);
 
 // Configurações da IA

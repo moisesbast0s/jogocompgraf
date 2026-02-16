@@ -26,6 +26,7 @@
 
 #include "audio/audio_system.h"
 
+#include "graphics/ui_text.h"
 #include "utils/assets.h"
 #include "core/config.h"
 
@@ -43,6 +44,18 @@ constexpr int MAX_MAGAZINE = 12;
 static GameAssets gAssets;
 Level gLevel;
 static AudioSystem gAudioSys;
+
+// --- Sistema de mapas/portal ---
+static const char* gMapList[] = {
+    "maps/map1.txt",
+    "maps/map2.txt"
+};
+static const int gMapCount = 2;
+static int gCurrentMap = 0;
+
+// --- Aviso de fase ---
+static float gPhaseNotifyTimer = 0.0f;
+static int gPhaseNotifyNum = 0;
 
 GameContext &gameContext() { return g; }
 
@@ -150,6 +163,21 @@ void gameReset()
     applySpawn(gLevel, camX, camZ);
 }
 
+// Carrega novo mapa (portal)
+bool gameLoadMap(const char *mapPath)
+{
+    if (!loadLevel(gLevel, mapPath, GameConfig::TILE_SIZE))
+        return false;
+
+    applySpawn(gLevel, camX, camZ);
+    camY = GameConfig::PLAYER_EYE_Y;
+
+    // Re-init audio para novo mapa
+    audioInit(gAudioSys, gLevel);
+
+    return true;
+}
+
 void gameUpdate(float dt)
 {
     g.time += dt;
@@ -190,6 +218,25 @@ void gameUpdate(float dt)
 
     updateEntities(dt);
     updateWeaponAnim(dt);
+
+    // CHECAGEM DO PORTAL
+    char tile = getTileAtPlayer(camX, camZ);
+    if (tile == 'P')
+    {
+        gCurrentMap++;
+        if (gCurrentMap >= gMapCount)
+        {
+            // Último mapa - vitória ou volta ao início
+            gCurrentMap = 0;
+        }
+        gameLoadMap(gMapList[gCurrentMap]);
+        gPhaseNotifyNum = gCurrentMap + 1;
+        gPhaseNotifyTimer = 3.0f;
+    }
+
+    // Atualiza timer do aviso de fase
+    if (gPhaseNotifyTimer > 0.0f)
+        gPhaseNotifyTimer -= dt;
 
     // 3. CHECAGEM DE GAME OVER
     if (g.player.health <= 0)
@@ -279,6 +326,54 @@ void gameRender()
         hudRenderAll(janelaW, janelaH, gHudTex, hs, true, true, true);
 
         menuMeltRenderOverlay(janelaW, janelaH, g.time);
+
+        // 3) Aviso de troca de fase
+        if (gPhaseNotifyTimer > 0.0f)
+        {
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            gluOrtho2D(0, janelaW, 0, janelaH);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Fundo escuro atrás do texto
+            float alpha = (gPhaseNotifyTimer > 1.0f) ? 0.6f : gPhaseNotifyTimer * 0.6f;
+            glColor4f(0.0f, 0.0f, 0.0f, alpha);
+            float cy = janelaH * 0.6f;
+            glBegin(GL_QUADS);
+            glVertex2f(0, cy - 50);
+            glVertex2f(janelaW, cy - 50);
+            glVertex2f(janelaW, cy + 50);
+            glVertex2f(0, cy + 50);
+            glEnd();
+
+            // Texto "FASE X"
+            char phaseMsg[32];
+            std::sprintf(phaseMsg, "FASE %d", gPhaseNotifyNum);
+            float textScale = 0.35f;
+            float tw = uiStrokeTextWidthScaled(phaseMsg, textScale);
+            float textAlpha = (gPhaseNotifyTimer > 1.0f) ? 1.0f : gPhaseNotifyTimer;
+            glColor4f(0.0f, 0.8f, 1.0f, textAlpha);
+            uiDrawStrokeText((janelaW - tw) * 0.5f, cy - 20, phaseMsg, textScale);
+
+            glDisable(GL_BLEND);
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_DEPTH_TEST);
+
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix();
+        }
     }
 
     glutSwapBuffers();

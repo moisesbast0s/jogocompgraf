@@ -448,6 +448,49 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             {
                 desenhaTileSangue(wx, wz, r, time);
             }
+            else if (c == 'P')
+            {
+                // Portal - chão pulsante azul/cyan
+                desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
+
+                // Efeito visual do portal (quad brilhante no chão)
+                glUseProgram(0);
+                glDisable(GL_LIGHTING);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                float pulse = 0.4f + 0.3f * sinf(time * 3.0f);
+                glColor4f(0.0f, 0.6f, 1.0f, pulse);
+
+                float half = TILE * 0.5f;
+                glBegin(GL_QUADS);
+                glNormal3f(0, 1, 0);
+                glVertex3f(wx - half, EPS_Y + 0.01f, wz + half);
+                glVertex3f(wx + half, EPS_Y + 0.01f, wz + half);
+                glVertex3f(wx + half, EPS_Y + 0.01f, wz - half);
+                glVertex3f(wx - half, EPS_Y + 0.01f, wz - half);
+                glEnd();
+
+                // Coluna de luz vertical
+                float colW = half * 0.3f;
+                float alpha2 = 0.15f + 0.1f * sinf(time * 5.0f);
+                glColor4f(0.0f, 0.8f, 1.0f, alpha2);
+                glBegin(GL_QUADS);
+                // Face 1
+                glVertex3f(wx - colW, EPS_Y, wz);
+                glVertex3f(wx + colW, EPS_Y, wz);
+                glVertex3f(wx + colW, CEILING_H, wz);
+                glVertex3f(wx - colW, CEILING_H, wz);
+                // Face 2
+                glVertex3f(wx, EPS_Y, wz - colW);
+                glVertex3f(wx, EPS_Y, wz + colW);
+                glVertex3f(wx, CEILING_H, wz + colW);
+                glVertex3f(wx, CEILING_H, wz - colW);
+                glEnd();
+
+                glDisable(GL_BLEND);
+                glEnable(GL_LIGHTING);
+            }
         }
     }
 }
