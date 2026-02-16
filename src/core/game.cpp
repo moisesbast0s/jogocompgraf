@@ -48,14 +48,19 @@ static AudioSystem gAudioSys;
 // --- Sistema de mapas/portal ---
 static const char* gMapList[] = {
     "maps/map1.txt",
-    "maps/map2.txt"
+    "maps/map2.txt",
+    "maps/map3.txt"
 };
-static const int gMapCount = 2;
+static const int gMapCount = 3;
 static int gCurrentMap = 0;
 
 // --- Aviso de fase ---
 static float gPhaseNotifyTimer = 0.0f;
 static int gPhaseNotifyNum = 0;
+
+// --- Tela de conclusão do jogo ---
+static bool gGameComplete = false;
+static float gGameCompleteTimer = 0.0f;
 
 GameContext &gameContext() { return g; }
 
@@ -221,22 +226,41 @@ void gameUpdate(float dt)
 
     // CHECAGEM DO PORTAL
     char tile = getTileAtPlayer(camX, camZ);
-    if (tile == 'P')
+    if (tile == 'P' && !gGameComplete)
     {
         gCurrentMap++;
         if (gCurrentMap >= gMapCount)
         {
-            // Último mapa - vitória ou volta ao início
-            gCurrentMap = 0;
+            // Último mapa - jogador zerou o jogo!
+            gGameComplete = true;
+            gGameCompleteTimer = 5.0f;
         }
-        gameLoadMap(gMapList[gCurrentMap]);
-        gPhaseNotifyNum = gCurrentMap + 1;
-        gPhaseNotifyTimer = 3.0f;
+        else
+        {
+            gameLoadMap(gMapList[gCurrentMap]);
+            gPhaseNotifyNum = gCurrentMap + 1;
+            gPhaseNotifyTimer = 3.0f;
+        }
     }
 
     // Atualiza timer do aviso de fase
     if (gPhaseNotifyTimer > 0.0f)
         gPhaseNotifyTimer -= dt;
+
+    // Atualiza timer de conclusão do jogo
+    if (gGameComplete)
+    {
+        gGameCompleteTimer -= dt;
+        if (gGameCompleteTimer <= 0.0f)
+        {
+            gGameComplete = false;
+            gGameCompleteTimer = 0.0f;
+            gCurrentMap = 0;
+            gameLoadMap(gMapList[gCurrentMap]);
+            g.state = GameState::MENU_INICIAL;
+        }
+        return; // Não processa mais nada enquanto mostra tela de conclusão
+    }
 
     // 3. CHECAGEM DE GAME OVER
     if (g.player.health <= 0)
@@ -327,7 +351,61 @@ void gameRender()
 
         menuMeltRenderOverlay(janelaW, janelaH, g.time);
 
-        // 3) Aviso de troca de fase
+        // 3) Tela de conclusão do jogo
+        if (gGameComplete)
+        {
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix();
+            glLoadIdentity();
+            gluOrtho2D(0, janelaW, 0, janelaH);
+            glMatrixMode(GL_MODELVIEW);
+            glPushMatrix();
+            glLoadIdentity();
+
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glDisable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            // Fundo escuro cobrindo a tela toda
+            float fadeAlpha = (gGameCompleteTimer > 4.0f) ? (5.0f - gGameCompleteTimer) : 1.0f;
+            if (gGameCompleteTimer < 1.0f) fadeAlpha = gGameCompleteTimer;
+            glColor4f(0.0f, 0.0f, 0.0f, 0.75f * fadeAlpha);
+            glBegin(GL_QUADS);
+            glVertex2f(0, 0);
+            glVertex2f(janelaW, 0);
+            glVertex2f(janelaW, janelaH);
+            glVertex2f(0, janelaH);
+            glEnd();
+
+            // Texto "VOCE ZEROU O JOGO!"
+            const char* msg1 = "VOCE ZEROU O JOGO!";
+            float scale1 = 0.4f;
+            float tw1 = uiStrokeTextWidthScaled(msg1, scale1);
+            float cy1 = janelaH * 0.6f;
+            glColor4f(0.0f, 1.0f, 0.3f, fadeAlpha);
+            uiDrawStrokeText((janelaW - tw1) * 0.5f, cy1, msg1, scale1);
+
+            // Texto "Parabens!" menor embaixo
+            const char* msg2 = "Parabens!";
+            float scale2 = 0.25f;
+            float tw2 = uiStrokeTextWidthScaled(msg2, scale2);
+            glColor4f(0.8f, 0.8f, 0.8f, fadeAlpha * 0.8f);
+            uiDrawStrokeText((janelaW - tw2) * 0.5f, cy1 - 60, msg2, scale2);
+
+            glDisable(GL_BLEND);
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_DEPTH_TEST);
+
+            glMatrixMode(GL_PROJECTION);
+            glPopMatrix();
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix();
+        }
+
+        // 4) Aviso de troca de fase
         if (gPhaseNotifyTimer > 0.0f)
         {
             glMatrixMode(GL_PROJECTION);
