@@ -177,7 +177,7 @@ static void desenhaQuadChao(float x, float z, float tile, float tilesUV)
     glEnd();
 }
 
-static void desenhaTileChao(float x, float z, GLuint texChaoX, bool temTeto)
+static void desenhaTileChao(float x, float z, GLuint texChaoX, bool temTeto, GLuint texTetoX = 0)
 {
     glUseProgram(0);
     glColor3f(1, 1, 1);
@@ -189,7 +189,7 @@ static void desenhaTileChao(float x, float z, GLuint texChaoX, bool temTeto)
 
     if (temTeto)
     {
-        glBindTexture(GL_TEXTURE_2D, texChaoX);
+        glBindTexture(GL_TEXTURE_2D, texTetoX ? texTetoX : texChaoX);
         desenhaQuadTeto(x, z, TILE, 2.0f);
     }
 }
@@ -406,7 +406,7 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
                 if (isIndoor)
                 {
                     beginIndoor(wx, wz, time);
-                    desenhaTileChao(wx, wz, r.texChaoInterno, true);
+                    desenhaTileChao(wx, wz, r.texChaoInterno, true, r.texTeto);
                     endIndoor();
                 }
                 else
@@ -416,12 +416,12 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             }
             else if (c == '0')
             {
-                desenhaTileChao(wx, wz, r.texChao, true);
+                desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
             }
             else if (c == '3')
             {
                 beginIndoor(wx, wz, time);
-                desenhaTileChao(wx, wz, r.texChaoInterno, true);
+                desenhaTileChao(wx, wz, r.texChaoInterno, true, r.texTeto);
                 endIndoor();
             }
             else if (c == '1')

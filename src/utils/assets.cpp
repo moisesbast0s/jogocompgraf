@@ -8,7 +8,7 @@ bool loadAssets(GameAssets &a)
     a.texMenuBG = carregaTextura("assets/menu_bg.png");
 
     a.texChao = carregaTextura("assets/181.png");
-    a.texParede = carregaTextura("assets/091.png");
+    a.texParede = carregaTextura("assets/090.png");
     a.texSangue = carregaTextura("assets/016.png");
     a.texLava = carregaTextura("assets/179.png");
     a.texChaoInterno = carregaTextura("assets/100.png");
