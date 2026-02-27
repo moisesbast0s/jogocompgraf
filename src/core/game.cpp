@@ -107,6 +107,7 @@ bool gameInit(const char *mapPath)
 
     gHudTex.texHudFundo = gAssets.texHudFundo;
     gHudTex.texGunHUD = gAssets.texGunHUD;
+    gHudTex.texLanternHUD = gAssets.texLanternHUD;
 
     gHudTex.texGunDefault = gAssets.texGunDefault;
     gHudTex.texGunFire1 = gAssets.texGunFire1;
@@ -123,6 +124,9 @@ bool gameInit(const char *mapPath)
         g.r.texEnemiesRage[i] = gAssets.texEnemiesRage[i];
         g.r.texEnemiesDamage[i] = gAssets.texEnemiesDamage[i];
     }
+
+    g.r.texEnemiesDead = gAssets.texEnemiesDead;
+    g.r.texAguaEsgoto = gAssets.texAguaEsgoto;
 
     g.r.texHealth = gAssets.texHealth;
     g.r.texAmmo = gAssets.texAmmo;

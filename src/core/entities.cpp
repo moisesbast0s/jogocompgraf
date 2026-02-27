@@ -52,17 +52,12 @@ void updateEntities(float dt)
 
     for (auto& en : lvl.enemies)
     {
+        // once an enemy is killed we leave it dead forever; the old logic
+        // treated its map position as a "spawn point" and reset it after
+        // respawnTimer elapsed.  to make each enemy appear only once we
+        // simply skip dead ones without resetting their state.
         if (en.state == STATE_DEAD)
         {
-            en.respawnTimer -= dt;
-            if (en.respawnTimer <= 0.0f)
-            {
-                en.state = STATE_IDLE;
-                en.hp = 100;
-                en.x = en.startX;
-                en.z = en.startZ;
-                en.hurtTimer = 0.0f;
-            }
             continue;
         }
 

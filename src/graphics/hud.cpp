@@ -130,12 +130,32 @@ static void drawWeaponHUD(int w, int h, const HudTextures& tex, WeaponState ws)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    float gunH = h * 0.5f;
+    float gunW = gunH;
+    
+    // Draw lantern to the left if available (static, no animation)
+    if (tex.texLanternHUD != 0)
+    {
+        glBindTexture(GL_TEXTURE_2D, tex.texLanternHUD);
+        glColor4f(1, 1, 1, 1);
+        
+        float lanternSize = h * 0.4f;
+        float lanternX = (w - gunW) / 2.0f - lanternSize - 20.0f;  // left of gun
+        float lanternY = 0.0f;
+        
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 1); glVertex2f(lanternX, lanternY);
+        glTexCoord2f(1, 1); glVertex2f(lanternX + lanternSize, lanternY);
+        glTexCoord2f(1, 0); glVertex2f(lanternX + lanternSize, lanternY + lanternSize);
+        glTexCoord2f(0, 0); glVertex2f(lanternX, lanternY + lanternSize);
+        glEnd();
+    }
+    
+    // Draw gun in center
     glBindTexture(GL_TEXTURE_2D, currentTex);
     glColor4f(1, 1, 1, 1);
 
-    float gunH = h * 0.5f;
-    float gunW = gunH;
-    float x = (w - gunW) / 2.0f;
+    float x = (w - gunW) / 2.0f; // slight right offset for better composition
     float y = 0.0f;
 
     if (ws != WeaponState::W_IDLE)

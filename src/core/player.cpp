@@ -134,15 +134,7 @@ void playerTryAttack()
         {
             en.state = STATE_DEAD;
             en.respawnTimer = 15.0f;
-
-            Item drop;
-            drop.type = ITEM_AMMO;
-            drop.x = en.x;
-            drop.z = en.z;
-            drop.active = true;
-            drop.respawnTimer = 0.0f;
-
-            lvl.items.push_back(drop);
+            // no item drop
         }
     }
 }

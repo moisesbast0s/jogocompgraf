@@ -9,6 +9,7 @@ struct GameAssets
     GLuint texParede = 0;
     GLuint texSangue = 0;
     GLuint texLava = 0;
+    GLuint texAguaEsgoto = 0;   // sewage water tile texture
     GLuint texChaoInterno = 0;
     GLuint texParedeInterna = 0;
     GLuint texTeto = 0;
@@ -25,11 +26,13 @@ struct GameAssets
     GLuint texGunReload2 = 0;
     GLuint texDamage = 0;
     GLuint texGunHUD = 0;
+    GLuint texLanternHUD = 0;           // new icon for lantern (not a real weapon)
     GLuint texHudFundo = 0;
 
     GLuint texEnemies[5]       = {0, 0, 0, 0, 0};
     GLuint texEnemiesRage[5]   = {0, 0, 0, 0, 0};
     GLuint texEnemiesDamage[5] = {0, 0, 0, 0, 0};
+    GLuint texEnemiesDead = 0;               // corpse sprite
 
     // shaders
     GLuint progSangue = 0;
