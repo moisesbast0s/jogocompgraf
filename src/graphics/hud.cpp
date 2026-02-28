@@ -5,6 +5,8 @@
 #include <string>
 #include <cstdlib>
 
+#include "graphics/FlashlightState.h"
+
 static void begin2D(int w, int h)
 {
     glMatrixMode(GL_PROJECTION);
@@ -361,8 +363,11 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
         glVertex2f(battX, battY + battH);
         glEnd();
 
-        // Barras de carga (4 segmentos verdes - bateria cheia)
+        // Barras de carga (4 segmentos)
         int battSegs = 4;
+        int activeSegs = (int)((flashlightBattery / 100.0f) * battSegs + 0.999f);
+        if(activeSegs > battSegs) activeSegs = battSegs;
+
         float segMargin = px;
         float innerW = battW - segMargin * 2.0f;
         float innerH = battH - segMargin * 2.0f;
@@ -374,8 +379,14 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
             float bsx = battX + segMargin + i * (bSegW + bSegGap);
             float bsy = battY + segMargin;
 
-            // Segmento verde (cheio por enquanto)
-            glColor3f(0.15f, 0.85f, 0.15f);
+            if(i < activeSegs) {
+                // Segmento verde cheio
+                glColor3f(0.15f, 0.85f, 0.15f);
+            } else {
+                // Segmento vazio / fraco
+                glColor3f(0.05f, 0.05f, 0.05f);
+            }
+
             glBegin(GL_QUADS);
             glVertex2f(bsx, bsy);
             glVertex2f(bsx + bSegW, bsy);
@@ -383,18 +394,20 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
             glVertex2f(bsx, bsy + innerH);
             glEnd();
 
-            // Brilho no topo do segmento
-            float bHighH = innerH * 0.25f;
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glColor4f(1.0f, 1.0f, 1.0f, 0.20f);
-            glBegin(GL_QUADS);
-            glVertex2f(bsx, bsy + innerH - bHighH);
-            glVertex2f(bsx + bSegW, bsy + innerH - bHighH);
-            glVertex2f(bsx + bSegW, bsy + innerH);
-            glVertex2f(bsx, bsy + innerH);
-            glEnd();
-            glDisable(GL_BLEND);
+            // Brilho apenas nos segmentos ativos
+            if(i < activeSegs) {
+                float bHighH = innerH * 0.25f;
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glColor4f(1.0f, 1.0f, 1.0f, 0.20f);
+                glBegin(GL_QUADS);
+                glVertex2f(bsx, bsy + innerH - bHighH);
+                glVertex2f(bsx + bSegW, bsy + innerH - bHighH);
+                glVertex2f(bsx + bSegW, bsy + innerH);
+                glVertex2f(bsx, bsy + innerH);
+                glEnd();
+                glDisable(GL_BLEND);
+            }
         }
 
         // Raio/relâmpago pixel art no centro (ícone de energia)

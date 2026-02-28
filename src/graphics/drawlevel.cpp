@@ -7,6 +7,8 @@
 #include "utils/utils.h"
 #include <cstdio>
 
+#include "graphics/FlashlightState.h"
+
 // =====================
 // CONFIG / CONSTANTES
 // =====================
@@ -407,7 +409,16 @@ static void setupFlashlight(float px, float pz, float dx, float dz) {
     glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightDir);
 
     // INTENSIDADE: Aumentamos os valores para 2.0f ou mais para "estourar" o brilho no centro
-    GLfloat brightWhite[] = { 2.5f, 2.5f, 2.2f, 1.0f }; 
+    // brilho variável dependendo da % da bateria
+    //GLfloat brightWhite[] = { 2.5f, 2.5f, 2.2f, 1.0f }; 
+    
+    float intensity = flashlightBattery / 100.0f; // 1.0 = cheia, 0.0 = apagada
+    if(intensity < 0.05f) intensity = 0.05f; // mínima fraca, quase apagada
+
+    GLfloat brightWhite[] = { 2.5f * intensity, 2.5f * intensity, 2.2f * intensity, 1.0f };
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, brightWhite);
+    glLightfv(GL_LIGHT2, GL_SPECULAR, brightWhite);
+    
     GLfloat ambientNone[] = { 0.0f, 0.0f, 0.0f, 1.0f }; // Lanterna não clareia o resto do mundo
 
     glLightfv(GL_LIGHT2, GL_DIFFUSE, brightWhite);
@@ -424,9 +435,30 @@ static void setupFlashlight(float px, float pz, float dx, float dz) {
     glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.005f); // Antes era 0.01
 }
 
+// atualizar a % da bateria
+void updateFlashlight(float dt) { // dt = delta time em segundos
+    if(flashlightOn) {
+        flashlightBattery -= batteryDrainRate * dt;
+        if(flashlightBattery <= 24.0f) {
+            flashlightBattery = 24.0f;
+            // flashlightOn = false; // desliga a lanterna
+        }
+    }
+}
+
+
 // 2. FUNÇÃO DRAWLEVEL INTEGRADA
 void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, const RenderAssets &r, float time)
 {
+    // calcula delta time
+    static float lastTime = 0.0f;
+    float currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+    float dt = currentTime - lastTime;
+    lastTime = currentTime;
+
+    // ATUALIZA BATERIA
+    updateFlashlight(dt);
+
     // 1. CONFIGURAÇÃO DE ESCURIDÃO TOTAL
     glDisable(GL_LIGHT0); // Mata o Sol
     glEnable(GL_LIGHTING);
