@@ -618,7 +618,7 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
                 isVisibleXZ(en.x, en.z, camX, camZ, hasFwd, fwdx, fwdz))
             {
 
-                drawSprite(en.x, en.z, 2.5f, 2.5f, r.texEnemiesDead, camX, camZ, -0.6f);
+                drawSprite(en.x, en.z, 2.5f, 2.5f, r.texEnemiesDead, camX, camZ, -0.7f);
             }
             continue;
         }
@@ -636,7 +636,7 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
         else
             currentTex = r.texEnemies[t];
 
-        drawSprite(en.x, en.z, 2.5f, 2.5f, currentTex, camX, camZ);
+        drawSprite(en.x, en.z, 2.5f, 2.5f, currentTex, camX, camZ, -0.2f);
     }
 
     glEnable(GL_LIGHTING);

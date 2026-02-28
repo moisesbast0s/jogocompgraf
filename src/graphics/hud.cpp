@@ -462,9 +462,9 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
         glColor3fv(colNum);
         drawBoldMonoText(xNum, yNum, std::to_string(s.currentAmmo).c_str(), scaleNum);
 
-        // Spare magazine count (recharges) displayed next to ammo
+        // Contagem de recargas completas (spare magazines) ao lado do número de munição
         glColor3fv(colNum);
-        float spareX = xNum + scaleNum * 80.0f; // small offset to the right
+        float spareX = xNum + scaleNum * 90.0f; // small offset to the right
         float spareY = yNum;
         std::string spareText = std::string("x") + std::to_string(s.spareMagazines);
         drawBoldMonoText(spareX, spareY, spareText.c_str(), scaleLbl);

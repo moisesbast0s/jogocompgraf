@@ -11,7 +11,7 @@ struct PlayerState
 
     int currentAmmo = 7;
     int reserveAmmo = 21;
-    int spareMagazines = 3; // number of full 7-bullet recharges
+    int spareMagazines = 3; // Numero de recargas completas disponíveis
 };
 
 struct WeaponAnim

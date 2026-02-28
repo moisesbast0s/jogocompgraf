@@ -192,7 +192,7 @@ void updateWeaponAnim(float dt)
         g.weapon.timer = 0.0f;
 
         int give = 0;
-        // Prefer consuming a full spare magazine if available
+        // prefere usar uma recarga completa se tiver, para manter a reserva mais organizada
         if (g.player.spareMagazines > 0)
         {
             give = MAX_MAGAZINE;
