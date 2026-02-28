@@ -41,7 +41,9 @@ enum ItemType
 {
     ITEM_HEALTH,
     ITEM_AMMO,
-    ITEM_AMMO_BOX
+    ITEM_AMMO_BOX,
+    ITEM_BATTERY,
+    ITEM_PISTOL_AMMO
 };
 
 struct Item

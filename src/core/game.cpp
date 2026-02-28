@@ -38,7 +38,7 @@
 static HudTextures gHudTex;
 static GameContext g;
 
-constexpr int MAX_MAGAZINE = 12;
+constexpr int MAX_MAGAZINE = 7;
 
 // --- Assets / Level ---
 static GameAssets gAssets;
@@ -131,6 +131,8 @@ bool gameInit(const char *mapPath)
 
     g.r.texHealth = gAssets.texHealth;
     g.r.texAmmo = gAssets.texAmmo;
+    g.r.texBattery = gAssets.texBattery;
+    g.r.texPistolAmmo = gAssets.texPistolAmmo;
 
     g.r.progSangue = gAssets.progSangue;
     g.r.progLava = gAssets.progLava;
@@ -161,8 +163,10 @@ bool gameInit(const char *mapPath)
 void gameReset()
 {
     g.player.health = 100;
-    g.player.currentAmmo = 12;
-    g.player.reserveAmmo = 25;
+    g.player.currentAmmo = 7;
+    g.player.reserveAmmo = 21;
+
+    g.player.spareMagazines = 3;
 
     g.player.damageAlpha = 0.0f;
     g.player.healthAlpha = 0.0f;
@@ -311,6 +315,7 @@ void gameRender()
     hs.playerHealth = g.player.health;
     hs.currentAmmo = g.player.currentAmmo;
     hs.reserveAmmo = g.player.reserveAmmo;
+    hs.spareMagazines = g.player.spareMagazines;
     hs.damageAlpha = g.player.damageAlpha;
     hs.healthAlpha = g.player.healthAlpha;
     hs.weaponState = g.weapon.state;

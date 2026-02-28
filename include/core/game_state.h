@@ -9,8 +9,9 @@ struct PlayerState
     float damageAlpha = 0.0f;
     float healthAlpha = 0.0f;
 
-    int currentAmmo = 12;
-    int reserveAmmo = 25;
+    int currentAmmo = 7;
+    int reserveAmmo = 21;
+    int spareMagazines = 3; // number of full 7-bullet recharges
 };
 
 struct WeaponAnim
@@ -33,6 +34,8 @@ struct RenderAssets
 
     GLuint texHealth = 0;
     GLuint texAmmo = 0;
+    GLuint texBattery = 0;
+    GLuint texPistolAmmo = 0;
 
     GLuint progSangue = 0;
     GLuint progLava = 0;

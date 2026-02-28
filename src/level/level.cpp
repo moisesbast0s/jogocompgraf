@@ -48,7 +48,7 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
 
             if (c == 'J') enemyType = 0;      // Inimigo Tipo 1
             else if (c == 'T') enemyType = 1; // Inimigo Tipo 2 
-            else if (c == 'M') enemyType = 2; // Inimigo Tipo 3 
+            else if (c == 'C') enemyType = 2; // Inimigo Tipo 3 
             else if (c == 'G') enemyType = 3; // Inimigo Tipo 4
             else if (c == 'K') enemyType = 4; // Inimigo Tipo 5
 
@@ -93,6 +93,26 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
                 i.z = wz;
                 i.type = ITEM_AMMO;
                 i.active = true;
+                lvl.items.push_back(i);
+            }
+            else if (c == 'B') //Bateria    
+            {
+                Item i;
+                i.x = wx;
+                i.z = wz;
+                i.type = ITEM_BATTERY;
+                i.active = true;
+                i.respawnTimer = 0.0f;
+                lvl.items.push_back(i);
+            }
+            else if (c == 'M') // Munição de Pistola
+            {
+                Item i;
+                i.x = wx;
+                i.z = wz;
+                i.type = ITEM_PISTOL_AMMO;
+                i.active = true;
+                i.respawnTimer = 0.0f;
                 lvl.items.push_back(i);
             }
         }

@@ -2,6 +2,7 @@
 #include "core/game.h"
 #include "core/camera.h"
 #include "audio/audio_system.h"
+#include "graphics/FlashlightState.h"  // for flashlightBattery/flashlightOn
 #include <cmath>
 
 bool isWalkable(float x, float z)
@@ -147,7 +148,21 @@ void updateEntities(float dt)
             else if (item.type == ITEM_AMMO)
             {
                 item.respawnTimer = 999999.0f;
-                g.player.reserveAmmo = 20;
+                g.player.reserveAmmo += 7;
+                g.player.spareMagazines += 1;
+            }
+            else if (item.type == ITEM_PISTOL_AMMO)
+            {
+                item.respawnTimer = 999999.0f;
+                g.player.reserveAmmo += 7;
+                g.player.spareMagazines += 1;
+            }
+            else if (item.type == ITEM_BATTERY)
+            {
+                item.respawnTimer = 999999.0f;
+                flashlightBattery += 50.0f;
+                if (flashlightBattery > 100.0f) flashlightBattery = 100.0f;
+                flashlightOn = true;
             }
         }
     }

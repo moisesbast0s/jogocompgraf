@@ -302,7 +302,6 @@ static void desenhaTileLava(float x, float z, const RenderAssets &r, float time)
     glUseProgram(0);
 }
 
-// sewage water behaves like lava but uses a simple texture instead of shader
 static void desenhaTileAgua(float x, float z, const RenderAssets &r)
 {
     glUseProgram(0); // fixed pipeline
@@ -412,8 +411,7 @@ static void setupFlashlight(float px, float pz, float dx, float dz) {
     // brilho variável dependendo da % da bateria
     //GLfloat brightWhite[] = { 2.5f, 2.5f, 2.2f, 1.0f }; 
     
-    float intensity = flashlightBattery / 100.0f; // 1.0 = cheia, 0.0 = apagada
-    if(intensity < 0.05f) intensity = 0.05f; // mínima fraca, quase apagada
+    float intensity = flashlightOn ? 1.0f : 0.0f; // se a lanterna estiver desligada, a intensidade é 0 (sem luz)
 
     GLfloat brightWhite[] = { 2.5f * intensity, 2.5f * intensity, 2.2f * intensity, 1.0f };
     glLightfv(GL_LIGHT2, GL_DIFFUSE, brightWhite);
@@ -439,9 +437,9 @@ static void setupFlashlight(float px, float pz, float dx, float dz) {
 void updateFlashlight(float dt) { // dt = delta time em segundos
     if(flashlightOn) {
         flashlightBattery -= batteryDrainRate * dt;
-        if(flashlightBattery <= 24.0f) {
-            flashlightBattery = 24.0f;
-            // flashlightOn = false; // desliga a lanterna
+        if (flashlightBattery <= 0.0f) {
+            flashlightBattery = 0.0f;
+            flashlightOn = false; //desliga a lanterna quando a bateria acabar
         }
     }
 }
@@ -484,15 +482,15 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             if (!isVisibleXZ(wx, wz, px, pz, hasFwd, fwdx, fwdz)) continue;
 
             char c = data[z][x];
-            bool isEntity = (c == 'J' || c == 'T' || c == 'M' || c == 'K' ||
-                             c == 'G' || c == 'H' || c == 'A' || c == 'E' ||
-                             c == 'F' || c == 'I');
+            bool isEnemy = (c == 'J' || c == 'T' || c == 'C' || c == 'K' ||
+                            c == 'G' || c == 'E' || c == 'F' || c == 'I');
+            bool isItem = (c == 'B' || c == 'M' || c == 'H' || c == 'A');
 
-            if (isEntity) {
-                // enemy/spawn markers were treated like empty floor but
-                // we still want a ceiling above them.  previously we
-                // passed `false` for `temTeto` which removed the tile
-                // roof; change to true so the ceiling is rendered too.
+            if (isEnemy) {
+                desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
+            }
+            else if (isItem) {
+            
                 desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
             }
             else if (c == '0') {
@@ -501,8 +499,7 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             else if (c == '3') {
                 desenhaTileChao(wx, wz, r.texChaoInterno, true, r.texTeto);
             }
-            else if (c == '4') {
-                // sewage water floor – no ceiling, special texture
+                else if (c == '4') {
                 desenhaTileAgua(wx, wz, r);
             }
             else if (c == '1') {
@@ -549,7 +546,7 @@ static void drawSprite(float x, float z, float w, float h, GLuint tex, float cam
     glColor3f(1, 1, 1);
 
     glPushMatrix();
-    // allow caller to nudge sprite vertically
+
     glTranslatef(x, yOffset, z);
 
     float ddx = camX - x;
@@ -606,18 +603,21 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
             drawSprite(item.x, item.z, 0.7f, 0.7f, r.texHealth, camX, camZ);
         else if (item.type == ITEM_AMMO)
             drawSprite(item.x, item.z, 0.7f, 0.7f, r.texAmmo, camX, camZ);
+        else if (item.type == ITEM_BATTERY)
+            drawSprite(item.x, item.z, 0.7f, 0.7f, r.texBattery, camX, camZ);
+        else if (item.type == ITEM_PISTOL_AMMO)
+            drawSprite(item.x, item.z, 0.7f, 0.7f, r.texPistolAmmo, camX, camZ);
     }
 
     // --- INIMIGOS ---
     for (const auto &en : enemies)
     {
-        // corpses: still visible but use dead texture
         if (en.state == STATE_DEAD)
         {
             if (r.texEnemiesDead != 0 &&
                 isVisibleXZ(en.x, en.z, camX, camZ, hasFwd, fwdx, fwdz))
             {
-                // push corpse slightly into the floor so it doesn't float
+
                 drawSprite(en.x, en.z, 2.5f, 2.5f, r.texEnemiesDead, camX, camZ, -0.6f);
             }
             continue;

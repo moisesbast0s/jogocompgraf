@@ -56,6 +56,8 @@ bool loadAssets(GameAssets &a)
 
     a.texHealth = carregaTextura("assets/health.png");
     a.texAmmo = carregaTextura("assets/066.png");
+    a.texBattery = carregaTextura("assets/BatteryCharge.png");
+    a.texPistolAmmo = carregaTextura("assets/pistolAmmo.png");
 
     a.texSkydome = carregaTextura("assets/Va4wUMQ.png");
 
@@ -70,7 +72,8 @@ bool loadAssets(GameAssets &a)
         !a.texDamage || !a.texAmmo || !a.texHealthOverlay || !a.texEnemies[0] ||
         !a.texEnemiesRage[0] || !a.texEnemiesDamage[0] || !a.texEnemies[1] ||
         !a.texEnemiesRage[1] || !a.texEnemiesDamage[1] || !a.texEnemies[2] ||
-        !a.texEnemiesRage[2] || !a.texEnemiesDamage[2] || !a.texEnemiesDead || !a.texAguaEsgoto || !a.texGunHUD || !a.texLanternHUD || !a.texHudFundo || !a.texMenuBG)
+        !a.texEnemiesRage[2] || !a.texEnemiesDamage[2] || !a.texEnemiesDead || !a.texAguaEsgoto || !a.texGunHUD || !a.texLanternHUD || !a.texHudFundo || !a.texMenuBG ||
+        !a.texBattery || !a.texPistolAmmo)
     {
         std::printf("ERRO: falha ao carregar algum asset (textura/shader).\n");
         return false;
