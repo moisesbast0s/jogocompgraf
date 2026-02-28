@@ -176,6 +176,18 @@ static void drawWeaponHUD(int w, int h, const HudTextures& tex, WeaponState ws)
     end2D();
 }
 
+// Helper: draw bold mono stroke text (retro Doom-era look)
+static void drawBoldMonoText(float x, float y, const char* text, float scale)
+{
+    glLineWidth(3.0f);
+    glPushMatrix();
+    glTranslatef(x, y, 0.0f);
+    glScalef(scale, scale, 1.0f);
+    for (const char* c = text; *c; ++c)
+        glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *c);
+    glPopMatrix();
+}
+
 static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
 {
     if (tex.texHudFundo == 0)
@@ -209,55 +221,199 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
     glEnd();
     glDisable(GL_TEXTURE_2D);
 
-    // bordas
+    // bordas - estilo Doom (bronze/dourado escuro)
     glLineWidth(3.0f);
-    glColor3f(0.7f, 0.7f, 0.75f);
+    glColor3f(0.72f, 0.53f, 0.04f);  // bronze dourado - borda superior
     glBegin(GL_LINES); glVertex2f(0, hBar); glVertex2f((float)w, hBar); glEnd();
 
-    glColor3f(0.2f, 0.2f, 0.25f);
+    glColor3f(0.45f, 0.30f, 0.05f);  // bronze escuro - divisor central
     glBegin(GL_LINES); glVertex2f(w / 2.0f, 0); glVertex2f(w / 2.0f, hBar); glEnd();
 
-    // texto
-    float scaleLbl = 0.0018f * hBar;
-    float scaleNum = 0.0035f * hBar;
+    // escala de texto (fonte mono bold retro)
+    float scaleLbl = 0.0020f * hBar;
+    float scaleNum = 0.0040f * hBar;
 
-    float colLbl[3] = {1.0f, 0.8f, 0.5f};
-    float colNum[3] = {0.8f, 0.0f, 0.0f};
+    float colLbl[3] = {0.85f, 0.65f, 0.13f};  // dourado Doom
+    float colNum[3] = {0.90f, 0.10f, 0.10f};  // vermelho vivo
 
-    // HEALTH label
-    float xTextHealth = w * 0.08f;
-    float yLblHealth = hBar * 0.35f;
-    glColor3fv(colLbl);
-    uiDrawStrokeText(xTextHealth, yLblHealth, "HEALTH", scaleLbl);
+    // ========== HEALTH ==========
 
-    // barra vida
-    float barH = hBar * 0.5f;
-    float barY = (hBar - barH) / 2.0f;
-    float barX = xTextHealth + (w * 0.08f);
+    // Barra de vida segmentada (blocos estilo retro)
+    float barH    = hBar * 0.35f;
+    float barY    = hBar * 0.35f;
+    float barX    = w * 0.05f;
     float barMaxW = (w * 0.45f) - barX;
 
-    glColor4f(0, 0, 0, 1);
-    glBegin(GL_QUADS);
-    glVertex2f(barX, barY); glVertex2f(barX + barMaxW, barY);
-    glVertex2f(barX + barMaxW, barY + barH); glVertex2f(barX, barY + barH);
-    glEnd();
+    int totalSegments = 20;
+    float segGap = 2.0f;
+    float segW = (barMaxW - segGap * (totalSegments - 1)) / (float)totalSegments;
 
     float pct = (float)s.playerHealth / 100.0f;
     if (pct < 0) pct = 0;
     if (pct > 1) pct = 1;
+    int litSegments = (int)(pct * totalSegments + 0.5f);
 
-    if (pct > 0.6f) glColor3f(0.0f, 0.8f, 0.0f);
-    else if (pct > 0.3f) glColor3f(1.0f, 0.8f, 0.0f);
-    else glColor3f(0.8f, 0.0f, 0.0f);
+    for (int i = 0; i < totalSegments; i++)
+    {
+        float sx = barX + i * (segW + segGap);
 
-    glBegin(GL_QUADS);
-    glVertex2f(barX, barY);
-    glVertex2f(barX + (barMaxW * pct), barY);
-    glVertex2f(barX + (barMaxW * pct), barY + barH);
-    glVertex2f(barX, barY + barH);
+        // Fundo do segmento (escuro)
+        glColor4f(0.15f, 0.05f, 0.05f, 1.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(sx, barY); glVertex2f(sx + segW, barY);
+        glVertex2f(sx + segW, barY + barH); glVertex2f(sx, barY + barH);
+        glEnd();
+
+        // Segmento aceso
+        if (i < litSegments)
+        {
+            glColor3f(0.15f, 0.75f, 0.15f); // verde
+
+            glBegin(GL_QUADS);
+            glVertex2f(sx, barY); glVertex2f(sx + segW, barY);
+            glVertex2f(sx + segW, barY + barH); glVertex2f(sx, barY + barH);
+            glEnd();
+
+            // Brilho no topo do segmento
+            float highlightH = barH * 0.25f;
+            glColor4f(1.0f, 1.0f, 1.0f, 0.15f);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBegin(GL_QUADS);
+            glVertex2f(sx, barY + barH - highlightH); glVertex2f(sx + segW, barY + barH - highlightH);
+            glVertex2f(sx + segW, barY + barH); glVertex2f(sx, barY + barH);
+            glEnd();
+            glDisable(GL_BLEND);
+        }
+    }
+
+    // Borda da barra
+    glColor3f(0.50f, 0.35f, 0.08f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(barX - 1, barY - 1);
+    glVertex2f(barX + barMaxW + 1, barY - 1);
+    glVertex2f(barX + barMaxW + 1, barY + barH + 1);
+    glVertex2f(barX - 1, barY + barH + 1);
     glEnd();
 
-    // arma ícone
+    // ========== BATERIA DA LANTERNA (pixel art) ==========
+    {
+        // Ícone da lanterna (ao lado esquerdo da bateria)
+        float iconLantSize = hBar * 0.7f;
+        float iconLantX = w * 0.52f;
+        float iconLantY = (hBar - iconLantSize) / 2.0f;
+
+        if (tex.texLanternIcon != 0)
+        {
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBindTexture(GL_TEXTURE_2D, tex.texLanternIcon);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glColor3f(1, 1, 1);
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 1); glVertex2f(iconLantX, iconLantY);
+            glTexCoord2f(1, 1); glVertex2f(iconLantX + iconLantSize, iconLantY);
+            glTexCoord2f(1, 0); glVertex2f(iconLantX + iconLantSize, iconLantY + iconLantSize);
+            glTexCoord2f(0, 0); glVertex2f(iconLantX, iconLantY + iconLantSize);
+            glEnd();
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+        }
+
+        float battW = hBar * 0.9f;   // largura total da bateria
+        float battH = hBar * 0.45f;  // altura
+        float battX = iconLantX + iconLantSize + hBar * 0.1f; // à direita do ícone
+        float battY = (hBar - battH) / 2.0f; // centralizado verticalmente
+
+        float tipW = battW * 0.08f;  // terminal positivo
+        float tipH = battH * 0.4f;
+
+        float px = hBar * 0.04f;     // tamanho do pixel
+
+        // Corpo da bateria (fundo escuro)
+        glColor3f(0.12f, 0.12f, 0.12f);
+        glBegin(GL_QUADS);
+        glVertex2f(battX, battY);
+        glVertex2f(battX + battW, battY);
+        glVertex2f(battX + battW, battY + battH);
+        glVertex2f(battX, battY + battH);
+        glEnd();
+
+        // Terminal positivo (ponta direita)
+        glColor3f(0.35f, 0.35f, 0.35f);
+        glBegin(GL_QUADS);
+        glVertex2f(battX + battW, battY + (battH - tipH) / 2.0f);
+        glVertex2f(battX + battW + tipW, battY + (battH - tipH) / 2.0f);
+        glVertex2f(battX + battW + tipW, battY + (battH + tipH) / 2.0f);
+        glVertex2f(battX + battW, battY + (battH + tipH) / 2.0f);
+        glEnd();
+
+        // Borda da bateria (pixel art style)
+        glColor3f(0.60f, 0.60f, 0.60f);
+        glLineWidth(2.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(battX, battY);
+        glVertex2f(battX + battW, battY);
+        glVertex2f(battX + battW, battY + battH);
+        glVertex2f(battX, battY + battH);
+        glEnd();
+
+        // Barras de carga (4 segmentos verdes - bateria cheia)
+        int battSegs = 4;
+        float segMargin = px;
+        float innerW = battW - segMargin * 2.0f;
+        float innerH = battH - segMargin * 2.0f;
+        float bSegGap = px;
+        float bSegW = (innerW - bSegGap * (battSegs - 1)) / (float)battSegs;
+
+        for (int i = 0; i < battSegs; i++)
+        {
+            float bsx = battX + segMargin + i * (bSegW + bSegGap);
+            float bsy = battY + segMargin;
+
+            // Segmento verde (cheio por enquanto)
+            glColor3f(0.15f, 0.85f, 0.15f);
+            glBegin(GL_QUADS);
+            glVertex2f(bsx, bsy);
+            glVertex2f(bsx + bSegW, bsy);
+            glVertex2f(bsx + bSegW, bsy + innerH);
+            glVertex2f(bsx, bsy + innerH);
+            glEnd();
+
+            // Brilho no topo do segmento
+            float bHighH = innerH * 0.25f;
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glColor4f(1.0f, 1.0f, 1.0f, 0.20f);
+            glBegin(GL_QUADS);
+            glVertex2f(bsx, bsy + innerH - bHighH);
+            glVertex2f(bsx + bSegW, bsy + innerH - bHighH);
+            glVertex2f(bsx + bSegW, bsy + innerH);
+            glVertex2f(bsx, bsy + innerH);
+            glEnd();
+            glDisable(GL_BLEND);
+        }
+
+        // Raio/relâmpago pixel art no centro (ícone de energia)
+        float cx = battX + battW * 0.5f;
+        float cy = battY + battH * 0.5f;
+        float boltS = battH * 0.15f; // escala do raio
+
+        glColor3f(1.0f, 0.95f, 0.2f); // amarelo
+        glBegin(GL_POLYGON);
+        glVertex2f(cx - boltS * 0.5f, cy + boltS * 2.0f);
+        glVertex2f(cx + boltS * 1.0f, cy + boltS * 0.3f);
+        glVertex2f(cx + boltS * 0.1f, cy + boltS * 0.3f);
+        glVertex2f(cx + boltS * 0.5f, cy - boltS * 2.0f);
+        glVertex2f(cx - boltS * 1.0f, cy - boltS * 0.3f);
+        glVertex2f(cx - boltS * 0.1f, cy - boltS * 0.3f);
+        glEnd();
+    }
+
+    // ========== ARMA ÍCONE ==========
     if (tex.texGunHUD != 0)
     {
         glEnable(GL_TEXTURE_2D);
@@ -265,14 +421,14 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glColor3f(1, 1, 1);
 
-        float iconSize = hBar * 1.5f;
+        float iconSize = hBar * 1.2f;
         float iconY = (hBar - iconSize) / 2.0f + (hBar * 0.1f);
 
         glBindTexture(GL_TEXTURE_2D, tex.texGunHUD);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        float weaponWidth = iconSize * 2.2f;
+        float weaponWidth = iconSize * 1.4f;
         float xIconGun = (w * 0.75f) - (weaponWidth / 2.0f);
 
         glBegin(GL_QUADS);
@@ -291,17 +447,10 @@ static void drawDoomBar(int w, int h, const HudTextures& tex, const HudState& s)
         float xNum = xAmmoBlock + 5.0f;
 
         glColor3fv(colNum);
-        glPushMatrix();
-        glTranslatef(xNum, yNum, 0);
-        glScalef(scaleNum, scaleNum, 1);
-        {
-            std::string sAmmo = std::to_string(s.currentAmmo);
-            for (char c : sAmmo) glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, c);
-        }
-        glPopMatrix();
+        drawBoldMonoText(xNum, yNum, std::to_string(s.currentAmmo).c_str(), scaleNum);
 
         glColor3fv(colLbl);
-        uiDrawStrokeText(xAmmoBlock, hBar * 0.20f, "AMMO", scaleLbl);
+        drawBoldMonoText(xAmmoBlock, hBar * 0.20f, "AMMO", scaleLbl);
     }
 
     end2D();

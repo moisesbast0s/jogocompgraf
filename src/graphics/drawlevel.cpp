@@ -224,28 +224,28 @@ static void desenhaParedePorFace(float x, float z, GLuint texParedeX, int f) {
             glBegin(GL_QUADS);
             switch (f) {
                 case 0: // Face Z+
-                    glTexCoord2f(u, v);          glVertex3f(x + w, h, z + half);
-                    glTexCoord2f(uNext, v);      glVertex3f(x + w + stepX, h, z + half);
-                    glTexCoord2f(uNext, vNext);  glVertex3f(x + w + stepX, h + stepY, z + half);
-                    glTexCoord2f(u, vNext);      glVertex3f(x + w, h + stepY, z + half);
+                    glTexCoord2f(uNext, vNext);  glVertex3f(x + w, h, z + half);
+                    glTexCoord2f(u, vNext);      glVertex3f(x + w + stepX, h, z + half);
+                    glTexCoord2f(u, v);          glVertex3f(x + w + stepX, h + stepY, z + half);
+                    glTexCoord2f(uNext, v);      glVertex3f(x + w, h + stepY, z + half);
                     break;
                 case 1: // Face Z-
-                    glTexCoord2f(u, v);          glVertex3f(x + w + stepX, h, z - half);
-                    glTexCoord2f(uNext, v);      glVertex3f(x + w, h, z - half);
-                    glTexCoord2f(uNext, vNext);  glVertex3f(x + w, h + stepY, z - half);
-                    glTexCoord2f(u, vNext);      glVertex3f(x + w + stepX, h + stepY, z - half);
+                    glTexCoord2f(uNext, vNext);  glVertex3f(x + w + stepX, h, z - half);
+                    glTexCoord2f(u, vNext);      glVertex3f(x + w, h, z - half);
+                    glTexCoord2f(u, v);          glVertex3f(x + w, h + stepY, z - half);
+                    glTexCoord2f(uNext, v);      glVertex3f(x + w + stepX, h + stepY, z - half);
                     break;
                 case 2: // Face X+
-                    glTexCoord2f(u, v);          glVertex3f(x + half, h, z - w);
-                    glTexCoord2f(uNext, v);      glVertex3f(x + half, h, z - (w + stepX));
-                    glTexCoord2f(uNext, vNext);  glVertex3f(x + half, h + stepY, z - (w + stepX));
-                    glTexCoord2f(u, vNext);      glVertex3f(x + half, h + stepY, z - w);
+                    glTexCoord2f(uNext, vNext);  glVertex3f(x + half, h, z - w);
+                    glTexCoord2f(u, vNext);      glVertex3f(x + half, h, z - (w + stepX));
+                    glTexCoord2f(u, v);          glVertex3f(x + half, h + stepY, z - (w + stepX));
+                    glTexCoord2f(uNext, v);      glVertex3f(x + half, h + stepY, z - w);
                     break;
                 case 3: // Face X-
-                    glTexCoord2f(u, v);          glVertex3f(x - half, h, z + w);
-                    glTexCoord2f(uNext, v);      glVertex3f(x - half, h, z + w + stepX);
-                    glTexCoord2f(uNext, vNext);  glVertex3f(x - half, h + stepY, z + w + stepX);
-                    glTexCoord2f(u, vNext);      glVertex3f(x - half, h + stepY, z + w);
+                    glTexCoord2f(uNext, vNext);  glVertex3f(x - half, h, z + w);
+                    glTexCoord2f(u, vNext);      glVertex3f(x - half, h, z + w + stepX);
+                    glTexCoord2f(u, v);          glVertex3f(x - half, h + stepY, z + w + stepX);
+                    glTexCoord2f(uNext, v);      glVertex3f(x - half, h + stepY, z + w);
                     break;
             }
             glEnd();

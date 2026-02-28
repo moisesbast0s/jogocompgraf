@@ -9,6 +9,7 @@ struct HudTextures
     GLuint texHudFundo = 0;
     GLuint texGunHUD = 0;
     GLuint texLanternHUD = 0;    // static lantern image
+    GLuint texLanternIcon = 0;   // small lantern icon for doom bar
 
     GLuint texGunDefault = 0;
     GLuint texGunFire1 = 0;

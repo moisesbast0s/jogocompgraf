@@ -108,6 +108,7 @@ bool gameInit(const char *mapPath)
     gHudTex.texHudFundo = gAssets.texHudFundo;
     gHudTex.texGunHUD = gAssets.texGunHUD;
     gHudTex.texLanternHUD = gAssets.texLanternHUD;
+    gHudTex.texLanternIcon = gAssets.texLanternIcon;
 
     gHudTex.texGunDefault = gAssets.texGunDefault;
     gHudTex.texGunFire1 = gAssets.texGunFire1;

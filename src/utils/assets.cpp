@@ -8,7 +8,7 @@ bool loadAssets(GameAssets &a)
     a.texMenuBG = carregaTextura("assets/menu_bg.png");
 
     a.texChao = carregaTextura("assets/181.png");
-    a.texParede = carregaTextura("assets/090.png");
+    a.texParede = carregaTextura("assets/textura-cranio.jpeg");
     a.texSangue = carregaTextura("assets/016.png");
     a.texLava = carregaTextura("assets/179.png");
     a.texAguaEsgoto = carregaTextura("assets/agua_esgoto.png");
@@ -59,9 +59,10 @@ bool loadAssets(GameAssets &a)
 
     a.texSkydome = carregaTextura("assets/Va4wUMQ.png");
 
-    a.texGunHUD = carregaTextura("assets/Shotgun.png");
+    a.texGunHUD = carregaTextura("assets/arma.png");
     a.texLanternHUD = carregaTextura("assets/lantern.png");
-    a.texHudFundo = carregaTextura("assets/088.png");
+    a.texLanternIcon = carregaTextura("assets/icon_latern.png");
+    a.texHudFundo = carregaTextura("assets/100.png");
 
     if (!a.texChao || !a.texParede || !a.texSangue || !a.texLava || !a.progSangue ||
         !a.progLava || !a.texHealth || !a.texGunDefault || !a.texGunFire1 ||

@@ -27,6 +27,7 @@ struct GameAssets
     GLuint texDamage = 0;
     GLuint texGunHUD = 0;
     GLuint texLanternHUD = 0;           // new icon for lantern (not a real weapon)
+    GLuint texLanternIcon = 0;          // small lantern icon for doom bar
     GLuint texHudFundo = 0;
 
     GLuint texEnemies[5]       = {0, 0, 0, 0, 0};
