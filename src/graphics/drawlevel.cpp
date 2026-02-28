@@ -8,6 +8,20 @@
 #include <cstdio>
 
 #include "graphics/FlashlightState.h"
+#include "graphics/Fog.h"
+
+
+#include <GL/glew.h>
+#include <GL/glut.h>
+#include <cmath>
+#include "core/game_state.h"
+#include "graphics/drawlevel.h"
+#include "level/levelmetrics.h"
+#include "utils/utils.h"
+#include <cstdio>
+
+#include "graphics/FlashlightState.h"
+#include "graphics/Fog.h"
 
 // =====================
 // CONFIG / CONSTANTES
@@ -31,8 +45,6 @@ static float gCullNearTiles = 2.0f;     // dentro disso não faz culling angular
 static float gCullMaxDistTiles = 20.0f; // 0 = sem limite; em tiles
 
 // Retorna TRUE se deve renderizar o objeto no plano XZ (distância + cone de FOV)
-// - Usa as configs globais gCull*
-// - Usa forward já normalizado (fwdx,fwdz) e flag hasFwd
 static inline bool isVisibleXZ(float objX, float objZ,
                                float camX, float camZ,
                                bool hasFwd, float fwdx, float fwdz)
@@ -41,7 +53,6 @@ static inline bool isVisibleXZ(float objX, float objZ,
     float vz = objZ - camZ;
     float distSq = vx * vx + vz * vz;
 
-    // 0) Distância máxima (se habilitada)
     if (gCullMaxDistTiles > 0.0f)
     {
         float maxDist = gCullMaxDistTiles * TILE;
@@ -50,19 +61,15 @@ static inline bool isVisibleXZ(float objX, float objZ,
             return false;
     }
 
-    // 1) Dentro do near: não faz culling angular
     float nearDist = gCullNearTiles * TILE;
     float nearDistSq = nearDist * nearDist;
     if (distSq <= nearDistSq)
         return true;
 
-    // 2) Sem forward válido: não faz culling angular
     if (!hasFwd)
         return true;
 
-    // 3) Cone por FOV horizontal
     float cosHalf = std::cos(deg2rad(gCullHFovDeg * 0.5f));
-
     float invDist = 1.0f / std::sqrt(distSq);
     float nvx = vx * invDist;
     float nvz = vz * invDist;
@@ -447,9 +454,16 @@ void updateFlashlight(float dt) { // dt = delta time em segundos
 }
 
 
-// 2. FUNÇÃO DRAWLEVEL INTEGRADA
-void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, const RenderAssets &r, float time)
+void drawLevel(const MapLoader &map, float px, float py, float pz, float dx, float dz, const RenderAssets &r, float time)
 {
+    // Inicializa as partículas de névoa uma única vez
+    static bool fogInitialized = false;
+    if (!fogInitialized) {
+        // map, altura, tamanho, densidade
+        initFogParticles(map, 0.01f, 3.0f, 30);
+        fogInitialized = true;
+    }
+
     // calcula delta time
     static float lastTime = 0.0f;
     float currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
@@ -488,21 +502,13 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
                              c == 'G' || c == 'H' || c == 'A' || c == 'E' ||
                              c == 'F' || c == 'I');
 
-            if (isEntity) {
-                // enemy/spawn markers were treated like empty floor but
-                // we still want a ceiling above them.  previously we
-                // passed `false` for `temTeto` which removed the tile
-                // roof; change to true so the ceiling is rendered too.
-                desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
-            }
-            else if (c == '0') {
+            if (isEntity || c == '0') {
                 desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
             }
             else if (c == '3') {
                 desenhaTileChao(wx, wz, r.texChaoInterno, true, r.texTeto);
             }
             else if (c == '4') {
-                // sewage water floor – no ceiling, special texture
                 desenhaTileAgua(wx, wz, r);
             }
             else if (c == '1') {
@@ -520,7 +526,6 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
             }
             else if (c == 'P') {
                 desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
-                // O portal emite luz própria, então desativamos iluminação para ele
                 glDisable(GL_LIGHTING);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -531,11 +536,16 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
                 glVertex3f(wx+half, EPS_Y+0.01f, wz-half); glVertex3f(wx-half, EPS_Y+0.01f, wz-half);
                 glEnd();
                 glDisable(GL_BLEND);
-                glEnable(GL_LIGHTING); // Volta a lanterna para o próximo tile
+                glEnable(GL_LIGHTING); 
             }
         }
     }
+
+    // DESENHA A NÉVOA NO FINAL DO CENÁRIO
+    // Passamos o dt (delta time) para animar as partículas
+    drawFog(px, py, pz, r, dt);
 }
+
 
 static void drawSprite(float x, float z, float w, float h, GLuint tex, float camX, float camZ, float yOffset = 0.0f)
 {

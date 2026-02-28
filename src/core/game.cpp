@@ -135,6 +135,9 @@ bool gameInit(const char *mapPath)
     g.r.progSangue = gAssets.progSangue;
     g.r.progLava = gAssets.progLava;
 
+    g.r.texFog = gAssets.texFog;
+    g.r.texSmoke = gAssets.texSmoke;
+
     if (!loadLevel(gLevel, mapPath, GameConfig::TILE_SIZE))
         return false;
 
@@ -297,7 +300,7 @@ void drawWorld3D()
     // Desenha o cenário
     setSunDirectionEachFrame();
     drawSkydome(camX, camY, camZ, g.r);
-    drawLevel(gLevel.map, camX, camZ, dirX, dirZ, g.r, g.time);
+    drawLevel(gLevel.map, camX, camY, camZ, dirX, dirZ, g.r, g.time);
     drawEntities(gLevel.enemies, gLevel.items, camX, camZ, dirX, dirZ, g.r);
 }
 
