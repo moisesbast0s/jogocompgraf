@@ -530,18 +530,85 @@ void drawLevel(const MapLoader &map, float px, float py, float pz, float dx, flo
                 drawFace(wx, wz, 3, vizEsq, r.texParedeInterna, time);
             }
             else if (c == 'P') {
+                // ── chão + teto normais ──
                 desenhaTileChao(wx, wz, r.texChao, true, r.texTeto);
+
+                float half = TILE * 0.5f;
+
+                // ── 1. Disco do vórtice no chão (shader) ──
                 glDisable(GL_LIGHTING);
                 glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                glColor4f(0.0f, 0.6f, 1.0f, 0.5f);
-                float half = TILE * 0.5f;
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                glDepthMask(GL_FALSE);
+
+                glUseProgram(r.progPortal);
+                GLint locTime = glGetUniformLocation(r.progPortal, "uTime");
+                glUniform1f(locTime, time);
+
+                glColor4f(1,1,1,1);
+                glNormal3f(0,1,0);
                 glBegin(GL_QUADS);
-                glVertex3f(wx-half, EPS_Y+0.01f, wz+half); glVertex3f(wx+half, EPS_Y+0.01f, wz+half);
-                glVertex3f(wx+half, EPS_Y+0.01f, wz-half); glVertex3f(wx-half, EPS_Y+0.01f, wz-half);
+                  glTexCoord2f(0,1); glVertex3f(wx-half, EPS_Y+0.02f, wz+half);
+                  glTexCoord2f(1,1); glVertex3f(wx+half, EPS_Y+0.02f, wz+half);
+                  glTexCoord2f(1,0); glVertex3f(wx+half, EPS_Y+0.02f, wz-half);
+                  glTexCoord2f(0,0); glVertex3f(wx-half, EPS_Y+0.02f, wz-half);
                 glEnd();
+                glUseProgram(0);
+
+                // ── 2. Coluna de luz vertical ──
+                float pulse = sinf(time * 3.0f) * 0.5f + 0.5f;
+                float colW  = half * 0.35f;
+                float colH  = WALL_H * 0.85f;
+                float alpha  = 0.12f + 0.08f * pulse;
+
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+                // 4 faces da coluna (billboard quad seria melhor, mas 4 faces funciona bem)
+                for (int face = 0; face < 4; face++) {
+                    float x0, z0, x1, z1;
+                    switch (face) {
+                        case 0: x0=wx-colW; z0=wz+colW; x1=wx+colW; z1=wz+colW; break;
+                        case 1: x0=wx+colW; z0=wz+colW; x1=wx+colW; z1=wz-colW; break;
+                        case 2: x0=wx+colW; z0=wz-colW; x1=wx-colW; z1=wz-colW; break;
+                        default:x0=wx-colW; z0=wz-colW; x1=wx-colW; z1=wz+colW; break;
+                    }
+                    glBegin(GL_QUADS);
+                      glColor4f(0.3f, 0.15f, 0.7f, alpha * 0.7f);
+                      glVertex3f(x0, EPS_Y, z0);
+                      glVertex3f(x1, EPS_Y, z1);
+                      glColor4f(0.2f, 0.5f, 1.0f, 0.0f);
+                      glVertex3f(x1, colH, z1);
+                      glVertex3f(x0, colH, z0);
+                    glEnd();
+                }
+
+                // ── 3. Partículas de energia (faíscas subindo) ──
+                float sparkAlpha = 0.55f + 0.25f * pulse;
+                for (int i = 0; i < 8; i++) {
+                    // posição pseudo-aleatória determinística por índice
+                    float seed  = float(i) * 1.618f;
+                    float angle = seed * 6.2831f;
+                    float fs1   = seed * 3.7f - floorf(seed * 3.7f);
+                    float rad   = half * 0.3f * (0.4f + 0.6f * fs1);
+                    float sx    = wx + cosf(angle + time * (1.0f + 0.3f * float(i))) * rad;
+                    float sz    = wz + sinf(angle + time * (1.0f + 0.3f * float(i))) * rad;
+                    float fs2   = seed * 2.3f - floorf(seed * 2.3f);
+                    float sy    = fmodf(time * (0.8f + 0.4f * fs2) + seed, colH);
+                    float fs3   = seed * 5.1f - floorf(seed * 5.1f);
+                    float pSize = 0.04f + 0.03f * fs3;
+
+                    glColor4f(0.5f, 0.7f, 1.0f, sparkAlpha * (1.0f - sy / colH));
+                    glBegin(GL_QUADS);
+                      glVertex3f(sx - pSize, sy,         sz);
+                      glVertex3f(sx + pSize, sy,         sz);
+                      glVertex3f(sx + pSize, sy + pSize*2, sz);
+                      glVertex3f(sx - pSize, sy + pSize*2, sz);
+                    glEnd();
+                }
+
+                glDepthMask(GL_TRUE);
                 glDisable(GL_BLEND);
-                glEnable(GL_LIGHTING); 
+                glEnable(GL_LIGHTING);
             }
         }
     }

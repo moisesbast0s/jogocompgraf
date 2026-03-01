@@ -39,6 +39,7 @@ struct RenderAssets
 
     GLuint progSangue = 0;
     GLuint progLava = 0;
+    GLuint progPortal = 0;
 
     GLint texFog = 0;
     GLint texSmoke = 0;

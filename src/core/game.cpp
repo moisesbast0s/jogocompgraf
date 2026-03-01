@@ -136,6 +136,7 @@ bool gameInit(const char *mapPath)
 
     g.r.progSangue = gAssets.progSangue;
     g.r.progLava = gAssets.progLava;
+    g.r.progPortal = gAssets.progPortal;
 
     g.r.texFog = gAssets.texFog;
     g.r.texSmoke = gAssets.texSmoke;
