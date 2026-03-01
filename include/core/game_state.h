@@ -39,6 +39,9 @@ struct RenderAssets
 
     GLuint progSangue = 0;
     GLuint progLava = 0;
+
+    GLint texFog = 0;
+    GLint texSmoke = 0;
 };
 
 struct GameContext

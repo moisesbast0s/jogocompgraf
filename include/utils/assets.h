@@ -32,6 +32,10 @@ struct GameAssets
     GLuint texLanternIcon = 0;          // small lantern icon for doom bar
     GLuint texHudFundo = 0;
 
+    // n é v o a
+    GLuint texFog = 0;
+    GLuint texSmoke = 0;
+
     GLuint texEnemies[5]       = {0, 0, 0, 0, 0};
     GLuint texEnemiesRage[5]   = {0, 0, 0, 0, 0};
     GLuint texEnemiesDamage[5] = {0, 0, 0, 0, 0};
