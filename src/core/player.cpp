@@ -4,7 +4,7 @@
 #include "audio/audio_system.h"
 #include <cmath>
 
-constexpr int MAX_MAGAZINE = 12;
+constexpr int MAX_MAGAZINE = 7;
 
 // Ajuste fino: raio do hitbox do inimigo no chão (mundo XZ)
 static constexpr float HIT_RADIUS = 0.55f;
@@ -59,7 +59,7 @@ void playerTryReload()
 
     if (g.weapon.state != WeaponState::W_IDLE)
         return;
-    if (g.player.currentAmmo >= MAX_MAGAZINE)
+    if (g.player.currentAmmo != 0)
         return;
     if (g.player.reserveAmmo <= 0)
         return;
@@ -191,11 +191,24 @@ void updateWeaponAnim(float dt)
         g.weapon.state = WeaponState::W_IDLE;
         g.weapon.timer = 0.0f;
 
-        int needed = MAX_MAGAZINE - g.player.currentAmmo;
-        if (needed > g.player.reserveAmmo)
-            needed = g.player.reserveAmmo;
+        int give = 0;
+        // prefere usar uma recarga completa se tiver, para manter a reserva mais organizada
+        if (g.player.spareMagazines > 0)
+        {
+            give = MAX_MAGAZINE;
+            if (give > g.player.reserveAmmo)
+                give = g.player.reserveAmmo;
 
-        g.player.currentAmmo += needed;
-        g.player.reserveAmmo -= needed;
+            g.player.spareMagazines -= 1;
+        }
+        else
+        {
+            give = MAX_MAGAZINE;
+            if (give > g.player.reserveAmmo)
+                give = g.player.reserveAmmo;
+        }
+
+        g.player.currentAmmo += give;
+        g.player.reserveAmmo -= give;
     }
 }

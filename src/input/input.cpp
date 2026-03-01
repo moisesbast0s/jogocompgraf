@@ -7,6 +7,7 @@
 #include "core/window.h"
 #include "graphics/menu.h"
 #include "core/game.h" // Adicione isso no topo
+#include "graphics/FlashlightState.h"  // for flashlightOn toggle
 
 void keyboard(unsigned char key, int, int)
 {
@@ -80,6 +81,11 @@ void keyboard(unsigned char key, int, int)
         case 'r':
         case 'R':
             playerTryReload();
+            break;
+        case 'f':
+        case 'F':
+            // Toggle da lanterna: inverte o estado atual (se estava ligada, desliga; se estava desligada, liga)
+            flashlightOn = !flashlightOn;
             break;
         }
     }
