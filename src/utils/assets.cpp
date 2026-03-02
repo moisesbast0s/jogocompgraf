@@ -18,6 +18,7 @@ bool loadAssets(GameAssets &a)
 
     a.progSangue = criaShader("shaders/blood.vert", "shaders/blood.frag");
     a.progLava = criaShader("shaders/lava.vert", "shaders/lava.frag");
+    a.progPortal = criaShader("shaders/portal.vert", "shaders/portal.frag");
 
     // --- INIMIGO 0 ('J') ---
     a.texEnemies[0] = carregaTextura("assets/enemies/enemy.png");
@@ -82,12 +83,15 @@ bool loadAssets(GameAssets &a)
     a.texLanternIcon = carregaTextura("assets/icon_latern.png");
     a.texHudFundo = carregaTextura("assets/100.png");
 
+    a.texFog   = carregaTextura("assets/fog2.png");
+    a.texSmoke = carregaTextura("assets/smoke_03.png");
+
     if (!a.texChao || !a.texParede || !a.texSangue || !a.texLava || !a.progSangue ||
         !a.progLava || !a.texHealth || !a.texGunDefault || !a.texGunFire1 ||
         !a.texGunFire2 || !a.texSkydome || !a.texGunReload1 || !a.texGunReload2 ||
         !a.texDamage || !a.texAmmo || !a.texHealthOverlay || !a.texEnemies[0] ||
         !a.texEnemiesRage[0] || !a.texEnemiesDamage[0] || !a.texEnemies[1] ||
-        !a.texEnemiesRage[1] || !a.texEnemiesDamage[1] || !a.texEnemies[2] ||
+        !a.texEnemiesRage[1] || !a.texEnemiesDamage[1] || !a.texEnemies[2] || !a.texFog || !a.texSmoke ||
         !a.texEnemiesRage[2] || !a.texEnemiesDamage[2] || !a.texEnemiesDead || !a.texAguaEsgoto || !a.texGunHUD || !a.texLanternHUD || !a.texHudFundo || !a.texMenuBG ||
         !a.texBattery || !a.texPistolAmmo || !a.texBosses[0] || !a.texBossesRage[0] || !a.texBossesDamage[0] ||
         !a.texBosses[1] || !a.texBossesRage[1] || !a.texBossesDamage[1] ||
