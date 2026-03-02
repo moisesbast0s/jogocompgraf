@@ -36,16 +36,18 @@ struct GameAssets
     GLuint texFog = 0;
     GLuint texSmoke = 0;
 
-    GLuint texEnemies[5]       = {0, 0, 0, 0, 0};
-    GLuint texEnemiesRage[5]   = {0, 0, 0, 0, 0};
-    GLuint texEnemiesDamage[5] = {0, 0, 0, 0, 0};
+    GLuint texEnemies[2]       = {0, 0};
+    GLuint texEnemiesRage[2]   = {0, 0};
+    GLuint texEnemiesDamage[2] = {0, 0};
     GLuint texEnemiesDead = 0;               // corpse sprite
+    GLuint texEnemiesDeadBat = 0;            // bat corpse sprite
 
     // Boss textures (3 bosses)
     GLuint texBosses[3]       = {0, 0, 0};
     GLuint texBossesRage[3]   = {0, 0, 0};
     GLuint texBossesDamage[3] = {0, 0, 0};
     GLuint texBossesDead = 0;                // boss corpse sprite
+    GLuint texBossesDeadBat = 0;               // boss bat corpse sprite
 
     // shaders
     GLuint progSangue = 0;

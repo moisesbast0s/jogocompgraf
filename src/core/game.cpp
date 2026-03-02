@@ -123,7 +123,7 @@ bool gameInit(const char *mapPath)
     gHudTex.texDamage = gAssets.texDamage;
     gHudTex.texHealthOverlay = gAssets.texHealthOverlay;
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 2; i++)
     {
         g.r.texEnemies[i] = gAssets.texEnemies[i];
         g.r.texEnemiesRage[i] = gAssets.texEnemiesRage[i];
@@ -131,6 +131,7 @@ bool gameInit(const char *mapPath)
     }
 
     g.r.texEnemiesDead = gAssets.texEnemiesDead;
+    g.r.texEnemiesDeadBat = gAssets.texEnemiesDeadBat;
     g.r.texAguaEsgoto = gAssets.texAguaEsgoto;
 
     for (int i = 0; i < 3; i++)
@@ -140,6 +141,7 @@ bool gameInit(const char *mapPath)
         g.r.texBossesDamage[i] = gAssets.texBossesDamage[i];
     }
     g.r.texBossesDead = gAssets.texBossesDead;
+    g.r.texBossesDeadBat = gAssets.texBossesDeadBat;
 
     g.r.texHealth = gAssets.texHealth;
     g.r.texAmmo = gAssets.texAmmo;

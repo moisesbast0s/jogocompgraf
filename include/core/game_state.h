@@ -26,16 +26,18 @@ struct RenderAssets
     GLuint texChaoInterno = 0, texParedeInterna = 0, texTeto = 0, texSkydome = 0, texMenuBG = 0;
     // GLuint texSkydome=0;
 
-    GLuint texEnemies[5] = {0};
-    GLuint texEnemiesRage[5] = {0};
-    GLuint texEnemiesDamage[5] = {0};
+    GLuint texEnemies[2] = {0};
+    GLuint texEnemiesRage[2] = {0};
+    GLuint texEnemiesDamage[2] = {0};
     GLuint texEnemiesDead = 0; // corpse sprite copied from assets
+    GLuint texEnemiesDeadBat = 0; // bat corpse sprite
     GLuint texAguaEsgoto = 0; // sewage water texture
 
     GLuint texBosses[3] = {0};
     GLuint texBossesRage[3] = {0};
     GLuint texBossesDamage[3] = {0};
     GLuint texBossesDead = 0; // boss corpse sprite
+    GLuint texBossesDeadBat = 0; // boss bat corpse sprite
 
     GLuint texHealth = 0;
     GLuint texAmmo = 0;

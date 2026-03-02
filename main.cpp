@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
     appInit();
 
-    if (!gameInit("maps/map1.txt"))
+    if (!gameInit("maps/map2.txt"))
         return 1;
 
     glutMainLoop();

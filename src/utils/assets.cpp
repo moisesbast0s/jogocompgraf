@@ -25,36 +25,25 @@ bool loadAssets(GameAssets &a)
     a.texEnemiesRage[0] = carregaTextura("assets/enemies/enemyRage.png");
     a.texEnemiesDamage[0] = carregaTextura("assets/enemies/enemyRageDamage.png");
 
-    // --- INIMIGO 1 ('T') ---
-    a.texEnemies[1] = carregaTextura("assets/enemies/enemy2.png");
-    a.texEnemiesRage[1] = carregaTextura("assets/enemies/enemyRage2.png");
-    a.texEnemiesDamage[1] = carregaTextura("assets/enemies/enemyRageDamage2.png");
+    // --- INIMIGO 1 ('T') - BAT ---
+    a.texEnemies[1] = carregaTextura("assets/enemies/enemyBat.png");
+    a.texEnemiesRage[1] = carregaTextura("assets/enemies/enemyBatRage.png");
+    a.texEnemiesDamage[1] = carregaTextura("assets/enemies/enemyBatRageDamage.png");
+    a.texEnemiesDeadBat = carregaTextura("assets/enemies/enemyBatDead.png");
 
-    // --- INIMIGO 2 ('M') ---
-    a.texEnemies[2] = carregaTextura("assets/enemies/enemy3.png");
-    a.texEnemiesRage[2] = carregaTextura("assets/enemies/enemyRage3.png");
-    a.texEnemiesDamage[2] = carregaTextura("assets/enemies/enemyRageDamage3.png");
-
-    // --- INIMIGO 3 ('K') ---
-    a.texEnemies[3] = carregaTextura("assets/enemies/enemy4.png");
-    a.texEnemiesRage[3] = carregaTextura("assets/enemies/enemyRage4.png");
-    a.texEnemiesDamage[3] = carregaTextura("assets/enemies/enemyRageDamage4.png");
-    // --- INIMIGO 4 ('G') ---
-    a.texEnemies[4] = carregaTextura("assets/enemies/enemy5.png");
-    a.texEnemiesRage[4] = carregaTextura("assets/enemies/enemyRage5.png");
-    a.texEnemiesDamage[4] = carregaTextura("assets/enemies/enemyRageDamage5.png");
 
     // corpse texture for dead enemies
     a.texEnemiesDead = carregaTextura("assets/enemies/dead.png");
+    a.texEnemiesDeadBat = carregaTextura("assets/enemies/enemyBatDead.png");
 
     // --- BOSS 0 ---
     a.texBosses[0] = carregaTextura("assets/enemies/boss.png");
     a.texBossesRage[0] = carregaTextura("assets/enemies/bossRage.png");
     a.texBossesDamage[0] = carregaTextura("assets/enemies/bossRageDamage.png");
     // --- BOSS 1 ---
-    a.texBosses[1] = carregaTextura("assets/enemies/boss.png");
-    a.texBossesRage[1] = carregaTextura("assets/enemies/bossRage.png");
-    a.texBossesDamage[1] = carregaTextura("assets/enemies/bossRageDamage.png");
+    a.texBosses[1] = carregaTextura("assets/enemies/bossBat.png");
+    a.texBossesRage[1] = carregaTextura("assets/enemies/bossBatRage.png");
+    a.texBossesDamage[1] = carregaTextura("assets/enemies/bossBatRageDamage.png");
     // --- BOSS 2 ---
     a.texBosses[2] = carregaTextura("assets/enemies/boss.png");
     a.texBossesRage[2] = carregaTextura("assets/enemies/bossRage.png");
@@ -62,6 +51,7 @@ bool loadAssets(GameAssets &a)
 
     // corpse texture for dead bosses
     a.texBossesDead = carregaTextura("assets/enemies/bossDead.png");
+    a.texBossesDeadBat = carregaTextura("assets/enemies/bossBatDead.png");
 
     a.texHealthOverlay = carregaTextura("assets/heal.png");
     a.texGunDefault = carregaTextura("assets/gun_default.png");

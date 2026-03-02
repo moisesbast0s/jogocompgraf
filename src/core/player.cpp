@@ -137,8 +137,8 @@ void playerTryAttack()
             en.state = STATE_DEAD;
             en.respawnTimer = 15.0f;
 
-            // 15% chance de dropar um item ao morrer
-            if ((std::rand() % 100) < 15) {
+            // 15% chance de dropar um item ao morrer (for enemy type 0 and 1)
+            if ((en.type == 0 || en.type == 1) && (std::rand() % 100) < 15) {
                 float dropDist = 0.8f; // o quanto o item deve aparecer afastado do centro do inimigo para evitar sobreposição visual
                 Item it;
                 it.x = en.x + dirX * dropDist;
