@@ -10,7 +10,7 @@
 
 extern void mouseClick(int button, int state, int x, int y);
 
-static const char *kTitle = "Labirinto do Julio";
+static const char *kTitle = "Paris Below - A Retro FPS Game";
 
 static void displayCb()
 {
