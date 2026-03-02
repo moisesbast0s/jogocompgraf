@@ -11,10 +11,8 @@
 
 ## 📖 Visão Geral
 
-**Paris Below** é um jogo de tiro em primeira pessoa (FPS) inspirado nos clássicos dos anos 90 como *Doom*. O jogador explora labirintos sombrios, enfrenta hordas de inimigos e chefes, coleta recursos e tenta sobreviver até o portal de saída.
+**Paris Below** é um jogo de tiro em primeira pessoa (FPS) inspirado nos clássicos dos anos 90 como *Doom*. O jogador explora as catacumbas de Paris, enfrenta hordas de ratos e morcegos mutantes, coleta recursos e tenta sobreviver até o portal de saída.
 
-### 🎥 Demonstração
-https://github.com/user-attachments/assets/be16fdec-675c-429a-895a-5aeb3071632c
 
 ---
 
@@ -24,7 +22,7 @@ https://github.com/user-attachments/assets/be16fdec-675c-429a-895a-5aeb3071632c
 |---------|-----------|
 | **Gênero** | FPS / Survival Horror |
 | **Perspectiva** | Primeira pessoa |
-| **Ambientação** | Labirintos subterrâneos sombrios |
+| **Ambientação** | Catacumbas de Paris |
 | **Objetivo** | Atravessar os 3 mapas, derrotar os bosses e alcançar o portal final |
 | **Tom** | Tenso, claustrofóbico, estilo retro |
 
@@ -67,37 +65,57 @@ A lanterna é **essencial** para enxergar nos labirintos escuros:
 
 Quando a bateria zera, a lanterna **apaga automaticamente** e o jogador fica no escuro até encontrar uma bateria.
 
+### ⏸️ Sistema de Pause
+
+O jogo pode ser pausado a qualquer momento durante a gameplay:
+
+| Aspecto | Descrição |
+|---------|-----------|
+| **Tecla** | `P` |
+| **Efeito visual** | Overlay vermelho escuro + vinheta nas bordas |
+| **Comportamento** | Mundo 3D congela, HUD permanece visível |
+| **Despausar** | Pressionar `P` novamente |
+
 ---
 
 ## 👾 Inimigos
 
-### Inimigos Regulares
+### 🐀 Ratos (Fase 1 e 3)
 
-| Tipo | Char | HP | Velocidade | Distância de Visão | Distância de Ataque |
-|------|:----:|:--:|:----------:|:------------------:|:-------------------:|
-| Rato 1 | `J` | 50 | 2.5 | 15 | 1.5 |
-| Rato 2 | `T` | 50 | 2.5 | 15 | 1.5 |
-| Rato 3 | `C` | 50 | 2.5 | 15 | 1.5 |
-| Rato 4 | `K` | 50 | 2.5 | 15 | 1.5 |
-| Rato 5 | `G` | 50 | 2.5 | 15 | 1.5 |
+Ratos mutantes das catacumbas. Aparecem na **Fase 1** e retornam na **Fase 3**.
 
-### Chefes (Bosses)
+| Tipo | Char | HP | Velocidade | Dist. Visão | Dist. Ataque |
+|------|:----:|:--:|:----------:|:-----------:|:------------:|
+| Rato Comum | `J` | 50 | 2.5 | 15 | 1.5 |
+| Rato Ágil | `T` | 50 | 2.5 | 15 | 1.5 |
 
-| Tipo | Char | HP | Velocidade | Distância de Visão | Distância de Ataque | Dano |
-|------|:----:|:--:|:----------:|:------------------:|:-------------------:|:----:|
-| Boss 1 | `Z` | 2000 | 2.0 | 20 | 2.0 | 40 |
-| Boss 2 | `Y` | 2000 | 2.0 | 20 | 2.0 | 40 |
-| Boss 3 | `X` | 2000 | 2.0 | 20 | 2.0 | 40 |
+### 🦇 Morcegos (Fase 2 e 3)
+
+Morcegos da Caótica. Aparecem na **Fase 2** e retornam na **Fase 3**.
+
+| Tipo | Char | HP | Velocidade | Dist. Visão | Dist. Ataque |
+|------|:----:|:--:|:----------:|:-----------:|:------------:|
+| Morcego Comum | `C` | 50 | 2.5 | 15 | 1.5 |
+| Morcego Veloz | `G` | 50 | 2.5 | 15 | 1.5 |
+| Morcego Elite | `K` | 50 | 2.5 | 15 | 1.5 |
+
+### 👹 Chefes (Bosses)
+
+| Tipo | Char | HP | Velocidade | Dist. Visão | Dist. Ataque | Dano |
+|------|:----:|:--:|:----------:|:-----------:|:------------:|:----:|
+| Rei Rato | `Z` | 2000 | 2.0 | 20 | 2.0 | 40 |
+| Morcego Ancião | `Y` | 2000 | 2.0 | 20 | 2.0 | 40 |
+| Quimera | `X` | 2000 | 2.0 | 20 | 2.0 | 40 |
 
 ### Comportamento da IA
 
 ```
-┌─────────┐    jogador visível    ┌─────────┐    jogador próximo    ┌─────────┐
-│  IDLE   │ ──────────────────► │  CHASE  │ ──────────────────► │ ATTACK  │
-└─────────┘                      └─────────┘                      └─────────┘
-     ▲                                │                                │
-     │         jogador longe          │         cooldown               │
-     └────────────────────────────────┴────────────────────────────────┘
+┌─────────┐  jogador visível  ┌─────────┐  jogador próximo  ┌─────────┐
+│  IDLE   │ ────────────────► │  CHASE  │ ────────────────► │ ATTACK  │
+└─────────┘                   └─────────┘                   └─────────┘
+     ▲                              │                             │
+     │       jogador longe          │         cooldown            │
+     └──────────────────────────────┴─────────────────────────────┘
 ```
 
 - **IDLE:** Parado, esperando detectar o jogador
@@ -122,15 +140,26 @@ Os itens são renderizados como **sprites billboard** (sempre voltados para a c�
 
 ## 🗺️ Design dos Mapas
 
-### Estrutura
+### Estrutura das Fases
 
-O jogo possui **3 mapas** progressivos:
+O jogo possui **3 fases** progressivas, cada uma com inimigos únicos:
 
-| Mapa | Nome | Dimensões | Inimigos | Boss | Dificuldade |
-|:----:|------|:---------:|:--------:|:----:|:-----------:|
-| 1 | Labirinto Compacto | 27×27 | 10 | Z | ⭐ |
-| 2 | Labirinto Subterrâneo | 27×28 | 10 | — | ⭐⭐ |
-| 3 | Estação Central | 27×28 | 12 | Z | ⭐⭐⭐ |
+| Fase | Nome | Dimensões | Inimigos | Tipos | Boss | Dificuldade |
+|:----:|------|:---------:|:--------:|:-----:|:----:|:-----------:|
+| 1 | Ninho dos Ratos | 27×27 | 10 | 🐀 Ratos | Rei Rato (Z) | ⭐ |
+| 2 | Covil dos Morcegos | 27×28 | 10 | 🦇 Morcegos | — | ⭐⭐ |
+| 3 | Catacumba Final | 27×28 | 12 | 🐀🦇 Misto | Quimera (Z) | ⭐⭐⭐ |
+
+### Progressão de Dificuldade
+
+```
+Fase 1: Ratos        Fase 2: Morcegos      Fase 3: Ratos + Morcegos
+    🐀🐀🐀              🦇🦇🦇                  🐀🦇🐀🦇
+    🐀🐀🐀      ───►    🦇🦇🦇       ───►      🦇🐀🦇🐀
+    🐀🐀🐀              🦇🦇🦇                  🐀🦇🐀🦇
+      👹                                          👹
+   Rei Rato                                    Quimera
+```
 
 ### Legenda do Mapa
 
@@ -143,7 +172,9 @@ O jogo possui **3 mapas** progressivos:
 | `4` | Água | Tile de água/esgoto |
 | `9` | Spawn | Posição inicial do jogador |
 | `P` | Portal | Saída para próximo mapa / vitória |
-
+| `J`, `T` | Rato | Inimigos tipo rato |
+| `C`, `G`, `K` | Morcego | Inimigos tipo morcego |
+| `Z`, `Y`, `X` | Boss | Chefes de fase |
 
 ### Exemplo de Mapa
 
@@ -169,11 +200,18 @@ O jogo possui **3 mapas** progressivos:
 - **GLEW** para carregar extensões
 - **GLUT/FreeGLUT** para janela e input
 
+### Shaders Especiais
 
+| Shader | Arquivo | Efeito |
+|--------|---------|--------|
+| Lava | `lava.vert/frag` | Distorção ondulante + brilho de calor |
+| Sangue | `blood.vert/frag` | Ondulação sutil |
+| Portal | `portal.vert/frag` | Vórtice espiral roxo/azul com partículas |
+| Melt | `melt.vert/frag` | Efeito de derretimento |
 
 ### Sistema de Iluminação
 
-- **Luz ambiente** escura (labirinto sombrio)
+- **Luz ambiente** escura (catacumbas sombrias)
 - **Lanterna do jogador** (GL_LIGHT2) — cone de luz direcional
 - **Luz indoor** (GL_LIGHT1) — iluminação pontual em áreas internas
 
@@ -207,7 +245,7 @@ gCullMaxDistTiles = 20.0f;   // Distância máxima de renderização
 | Recarga | Som de reload da pistola |
 | Dano no jogador | Feedback de dano recebido |
 | Dano no inimigo | Feedback de hit |
-| Ambiente | Sons atmosféricos |
+| Ambiente | Sons atmosféricos das catacumbas |
 
 ---
 
@@ -232,15 +270,16 @@ gCullMaxDistTiles = 20.0f;   // Distância máxima de renderização
 | Tecla | Ação |
 |:-----:|------|
 | **Mouse** | Olhar ao redor |
+| **P** | Pausar / Despausar |
 | **Alt + Enter** | Alternar tela cheia |
-| **ESC** | Menu / Sair |
+| **ESC** | Sair do jogo |
 
 ---
 
 ## 🏗️ Arquitetura do Código
 
 ```
-doom-cg/
+paris-below/
 ├── main.cpp              # Entry point
 ├── include/
 │   ├── audio/            # Sistema de áudio
@@ -293,20 +332,24 @@ O Makefile gera uma pasta `build/` auto-contida com:
 ## 📋 Fluxo do Jogo
 
 ```
-┌──────────────┐
-│ MENU INICIAL │
-└──────┬───────┘
-       │ Iniciar
-       ▼
-┌──────────────┐     Portal      ┌──────────────┐     Portal      ┌──────────────┐
-│    MAPA 1    │ ──────────────► │    MAPA 2    │ ──────────────► │    MAPA 3    │
-└──────┬───────┘                 └──────┬───────┘                 └──────┬───────┘
-       │                                │                                │
-       │ Morte                          │ Morte                          │ Portal
-       ▼                                ▼                                ▼
-┌──────────────┐                 ┌──────────────┐                 ┌──────────────┐
-│  GAME OVER   │                 │  GAME OVER   │                 │   VITÓRIA!   │
-└──────────────┘                 └──────────────┘                 └──────────────┘
+                          ┌──────────────┐
+                          │ MENU INICIAL │
+                          └──────┬───────┘
+                                 │ Enter
+                                 ▼
+┌─────────┐  P   ┌──────────────┐     Portal     ┌──────────────┐
+│ PAUSADO │◄────►│   FASE 1     │───────────────►│   FASE 2     │
+└─────────┘      │  🐀 Ratos    │                │ 🦇 Morcegos  │
+                 └──────┬───────┘                └──────┬───────┘
+                        │                               │
+                        │ Morte                         │ Portal
+                        ▼                               ▼
+                 ┌──────────────┐                ┌──────────────┐
+                 │  GAME OVER   │                │   FASE 3     │
+                 └──────────────┘                │ 🐀🦇 Misto   │
+                                                 └──────┬───────┘
+                                                        │
+                                          Portal ───────┴───────► 🏆 VITÓRIA!
 ```
 
 ---
@@ -315,3 +358,8 @@ O Makefile gera uma pasta `build/` auto-contida com:
 
 Projeto desenvolvido para a disciplina de Computação Gráfica.
 
+---
+
+## 📄 Licença
+
+Este projeto é para fins educacionais.
