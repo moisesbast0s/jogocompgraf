@@ -3,6 +3,7 @@
 #include "core/camera.h"
 #include "audio/audio_system.h"
 #include "graphics/FlashlightState.h"  // for flashlightBattery/flashlightOn
+#include "core/boss_pathfinding.h"      // boss pathfinding
 #include <cmath>
 
 bool isWalkable(float x, float z)
@@ -96,16 +97,35 @@ void updateEntities(float dt)
                 }
             }
             if (dist >= atkDist) {
-                float dirX = dx / dist;
-                float dirZ = dz / dist;
-
-                float moveStep = speed * dt;
-
-                float nextX = en.x + dirX * moveStep;
-                if (isWalkable(nextX, en.z)) en.x = nextX;
-
-                float nextZ = en.z + dirZ * moveStep;
-                if (isWalkable(en.x, nextZ)) en.z = nextZ;
+                if (en.type >= 5) {
+                    // Boss pathfinding
+                    auto path = bossFindPath(lvl, en.x, en.z, camX, camZ);
+                    if (!path.empty()) {
+                        // Move toward first step in path
+                        auto [tx, tz] = path.front();
+                        float tile = lvl.metrics.tile;
+                        float offX = lvl.metrics.offsetX;
+                        float offZ = lvl.metrics.offsetZ;
+                        float targetX = offX + tx * tile + tile * 0.5f;
+                        float targetZ = offZ + tz * tile + tile * 0.5f;
+                        float pdx = targetX - en.x;
+                        float pdz = targetZ - en.z;
+                        float plen = std::sqrt(pdx * pdx + pdz * pdz);
+                        if (plen > 0.01f) {
+                            float step = std::min(speed * dt, plen);
+                            en.x += pdx / plen * step;
+                            en.z += pdz / plen * step;
+                        }
+                    }
+                } else {
+                    float dirX = dx / dist;
+                    float dirZ = dz / dist;
+                    float moveStep = speed * dt;
+                    float nextX = en.x + dirX * moveStep;
+                    if (isWalkable(nextX, en.z)) en.x = nextX;
+                    float nextZ = en.z + dirZ * moveStep;
+                    if (isWalkable(en.x, nextZ)) en.z = nextZ;
+                }
             }
             break;
         }

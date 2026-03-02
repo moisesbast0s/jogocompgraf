@@ -10,10 +10,10 @@ const float ENEMY_VIEW_DIST = 15.0f;
 const float ENEMY_ATTACK_DIST = 1.5f;
 
 // Inimigo inicial HP (regulares)
-const float ENEMY_START_HP = 50.0f;
+const float ENEMY_START_HP = 100.0f;
 
 // Boss configurations
-const float BOSS_SPEED = 2.0f;           
+const float BOSS_SPEED = 3.0f;           
 const float BOSS_VIEW_DIST = 20.0f;      
 const float BOSS_ATTACK_DIST = 2.0f;     
 const float BOSS_START_HP = 2000.0f;      
