@@ -725,6 +725,7 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
         if (en.type >= 5)
         {
             // Boss sprites
+            int bossIdx = en.type - 5;
 
             if (en.hurtTimer > 0.0f)
                 currentTex = r.texBossesDamage[bossIdx];

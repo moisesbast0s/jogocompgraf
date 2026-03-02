@@ -197,7 +197,7 @@ void audioInit(AudioSystem& a, const Level& level) {
     a.bufGrunt = a.engine.loadWav("assets/audio/grunt_mono.wav");
     if (!a.bufGrunt) a.bufGrunt = a.engine.loadWav("assets/audio/grunt.wav");
 
-    // pickup sounds (no mono/stereo fallback needed, files already mono)
+    // sons de pickup (novos)
     a.bufAmmoPickup = a.engine.loadWav("assets/audio/ammo_sound.wav");
     if (!a.bufAmmoPickup) a.bufAmmoPickup = a.engine.loadWav("assets/audio/ammo_sound.wav");
 
