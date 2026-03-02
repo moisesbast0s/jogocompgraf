@@ -393,13 +393,13 @@ static void setupFlashlight(float px, float py, float pz, float dx, float dy, fl
     glLightfv(GL_LIGHT2, GL_SPECULAR, white);
 
     // Configurações do cone de luz
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0f);     // Ângulo do cone (ex: 25 graus)
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 50.0f);     // Ângulo do cone (ex: 25 graus)
     glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 20.0f);   // Suavidade das bordas (0-128)
 
     // Atenuação (faz a luz perder força com a distância)
     glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1.0f);
     glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.05f);
-    glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.01f);
+    glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.1f);
 }
 
 // 1. ADICIONE A FUNÇÃO AUXILIAR ANTES DA DRAWLEVEL
@@ -424,7 +424,7 @@ static void setupFlashlight(float px, float pz, float dx, float dz) {
     glLightfv(GL_LIGHT2, GL_DIFFUSE, brightWhite);
     glLightfv(GL_LIGHT2, GL_SPECULAR, brightWhite);
     
-    GLfloat ambientNone[] = { 0.0f, 0.0f, 0.0f, 1.0f }; // Lanterna não clareia o resto do mundo
+    GLfloat ambientNone[] = { 0.0f, 0.0f, 0.0f, 0.0f }; // Lanterna não clareia o resto do mundo
 
     glLightfv(GL_LIGHT2, GL_DIFFUSE, brightWhite);
     glLightfv(GL_LIGHT2, GL_SPECULAR, brightWhite);
@@ -476,7 +476,7 @@ void drawLevel(const MapLoader &map, float px, float py, float pz, float dx, flo
     glEnable(GL_LIGHTING);
     
     // Zera a luz ambiente do mundo (nada se vê sem lanterna)
-    GLfloat darkness[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    GLfloat darkness[] = { 0.0f, 0.0f, 0.0f, 0.0f };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, darkness);
 
     // 2. LIGA A LANTERNA
