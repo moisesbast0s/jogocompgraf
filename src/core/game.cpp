@@ -205,6 +205,10 @@ void gameReset()
     g.weapon.state = WeaponState::W_IDLE;
     g.weapon.timer = 0.0f;
 
+    // reset flashlight battery
+    extern float flashlightBattery;
+    flashlightBattery = 100.0f;
+
     // respawna o jogador após o reload de mapa
     applySpawn(gLevel, camX, camZ);
 }
