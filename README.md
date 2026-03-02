@@ -1,178 +1,317 @@
-❤️ Nicolas ❤️ PARABÉNS AOS QUE ESTÃO LISTADOS, E SEU GRUPO, COMO COLABORADORES NESTE REPOSITÓRIO
+# 🎮 Paris Below — Game Design Document
 
+<p align="center">
+  <img src="https://img.shields.io/badge/OpenGL-1.2%2B-blue?logo=opengl" alt="OpenGL"/>
+  <img src="https://img.shields.io/badge/GLSL-1.20-green" alt="GLSL"/>
+  <img src="https://img.shields.io/badge/Platform-Linux-orange?logo=linux" alt="Linux"/>
+  <img src="https://img.shields.io/badge/Language-C%2B%2B-red?logo=cplusplus" alt="C++"/>
+</p>
 
-# ODEIOS
-- ODEIO DÁRIO
-- ODEIO HELOYSA
-- ODEIO AUZIER
-- ODEIO KELVIN
+---
 
-# DoomLike OpenGL Project
+## 📖 Visão Geral
 
-Este projeto utiliza **OpenGL (pipeline fixo + GLSL 1.20)** para renderização,  
-**GLUT** para gerenciamento de janela/entrada e **GLEW** para carregar funções modernas  
-como shaders, VBOs e extensões necessárias.
+**Paris Below** é um jogo de tiro em primeira pessoa (FPS) inspirado nos clássicos dos anos 90 como *Doom*. O jogador explora labirintos sombrios, enfrenta hordas de inimigos e chefes, coleta recursos e tenta sobreviver até o portal de saída.
 
-## 🎥 Demonstração
+### 🎥 Demonstração
 https://github.com/user-attachments/assets/be16fdec-675c-429a-895a-5aeb3071632c
 
 ---
 
-## 📦 Dependências
+## 🎯 Conceito do Jogo
 
-Certifique-se de ter instalados os seguintes pacotes no seu sistema Linux:
-
-### 🛠️ Compilação
-- `g++`
-- `make`
-
-### 🖥️ Bibliotecas OpenGL
-- `freeglut`
-- `glew` (NOVA BIBLIOTECA QUE PRECISA INSTALAR)
-- `mesa`
-- `glu`
-
-### 🖼️ Carregamento de Texturas  
-- `stb_image.h` (arquivo de cabeçalho incluso no projeto)
+| Aspecto | Descrição |
+|---------|-----------|
+| **Gênero** | FPS / Survival Horror |
+| **Perspectiva** | Primeira pessoa |
+| **Ambientação** | Labirintos subterrâneos sombrios |
+| **Objetivo** | Atravessar os 3 mapas, derrotar os bosses e alcançar o portal final |
+| **Tom** | Tenso, claustrofóbico, estilo retro |
 
 ---
 
-## 🚀 Compilar e Executar
+## 🕹️ Mecânicas de Jogo
 
-Use o comando abaixo para compilar o projeto e executá-lo imediatamente:
+### 👤 Jogador
 
-### 🐧 Linux
-```bash
-g++ main.cpp draw.cpp input.cpp scene.cpp texture.cpp shader.cpp \
-    -o DoomLike \
-    -lGLEW -lGL -lGLU -lglut && ./DoomLike
+| Atributo | Valor |
+|----------|-------|
+| Vida máxima | 100 HP |
+| Altura dos olhos | 1.6 unidades |
+| Velocidade de movimento | Padrão FPS |
+
+### 🔫 Sistema de Armas
+
+O jogador possui uma **pistola** como arma principal:
+
+| Atributo | Valor |
+|----------|-------|
+| Munição no pente | 7 tiros |
+| Alcance máximo | 17 unidades |
+| Raio do hitbox (inimigo) | 0.55 unidades |
+| Estados | Idle → Fire1 → Fire2 → Return → Idle |
+| Recarga | 3 estágios de animação |
+
+**Mecânica de tiro:** Sistema de *raycast* no plano XZ. O tiro sai do centro da visão e verifica colisão com hitboxes circulares dos inimigos.
+
+### 🔦 Sistema de Lanterna
+
+A lanterna é **essencial** para enxergar nos labirintos escuros:
+
+| Atributo | Valor |
+|----------|-------|
+| Bateria inicial | 100% |
+| Duração total | 120 segundos |
+| Taxa de consumo | ~0.83% por segundo |
+| Recarga | Coletar baterias (item B) |
+
+Quando a bateria zera, a lanterna **apaga automaticamente** e o jogador fica no escuro até encontrar uma bateria.
+
+---
+
+## 👾 Inimigos
+
+### Inimigos Regulares
+
+| Tipo | Char | HP | Velocidade | Distância de Visão | Distância de Ataque |
+|------|:----:|:--:|:----------:|:------------------:|:-------------------:|
+| Rato 1 | `J` | 50 | 2.5 | 15 | 1.5 |
+| Rato 2 | `T` | 50 | 2.5 | 15 | 1.5 |
+| Rato 3 | `C` | 50 | 2.5 | 15 | 1.5 |
+| Rato 4 | `K` | 50 | 2.5 | 15 | 1.5 |
+| Rato 5 | `G` | 50 | 2.5 | 15 | 1.5 |
+
+### Chefes (Bosses)
+
+| Tipo | Char | HP | Velocidade | Distância de Visão | Distância de Ataque | Dano |
+|------|:----:|:--:|:----------:|:------------------:|:-------------------:|:----:|
+| Boss 1 | `Z` | 2000 | 2.0 | 20 | 2.0 | 40 |
+| Boss 2 | `Y` | 2000 | 2.0 | 20 | 2.0 | 40 |
+| Boss 3 | `X` | 2000 | 2.0 | 20 | 2.0 | 40 |
+
+### Comportamento da IA
+
+```
+┌─────────┐    jogador visível    ┌─────────┐    jogador próximo    ┌─────────┐
+│  IDLE   │ ──────────────────► │  CHASE  │ ──────────────────► │ ATTACK  │
+└─────────┘                      └─────────┘                      └─────────┘
+     ▲                                │                                │
+     │         jogador longe          │         cooldown               │
+     └────────────────────────────────┴────────────────────────────────┘
 ```
 
-### 🪟 Windows
-```bash
-g++ main.cpp draw.cpp input.cpp scene.cpp texture.cpp shader.cpp ^
-    -o DoomLike.exe ^
-    -lglew32 -lfreeglut -lopengl32 -lglu32 && DoomLike.exe
-```
-## 🎮 Como Jogar
+- **IDLE:** Parado, esperando detectar o jogador
+- **CHASE:** Persegue o jogador em linha reta
+- **ATTACK:** Ataca quando está em range, depois espera cooldown
+- **DEAD:** Inimigo morto (pode respawnar)
 
-A cena pode ser explorada em primeira pessoa, com movimentação típica de FPS clássico.
+---
+
+## 📦 Itens Coletáveis
+
+| Item | Char | Efeito | Sprite |
+|------|:----:|--------|--------|
+| Kit de Vida | `H` | Recupera HP do jogador | Billboard |
+| Munição | `A` | Adiciona munição reserva | Billboard |
+| Bateria | `B` | Recarrega a lanterna | Billboard |
+| Pente de Pistola | `M` | Adiciona munição de pistola | Billboard |
+
+Os itens são renderizados como **sprites billboard** (sempre voltados para a câmera) e não bloqueiam passagem.
+
+---
+
+## 🗺️ Design dos Mapas
+
+### Estrutura
+
+O jogo possui **3 mapas** progressivos:
+
+| Mapa | Nome | Dimensões | Inimigos | Boss | Dificuldade |
+|:----:|------|:---------:|:--------:|:----:|:-----------:|
+| 1 | Labirinto Compacto | 27×27 | 10 | Z | ⭐ |
+| 2 | Labirinto Subterrâneo | 27×28 | 10 | — | ⭐⭐ |
+| 3 | Estação Central | 27×28 | 12 | Z | ⭐⭐⭐ |
+
+### Legenda do Mapa
+
+| Char | Tipo | Descrição |
+|:----:|------|-----------|
+| `1` | Parede | Bloco sólido intransponível |
+| `0` | Chão | Piso normal caminhável |
+| `2` | Parede Interna | Parede com textura diferente |
+| `3` | Chão Interno | Piso indoor com textura diferente |
+| `4` | Água | Tile de água/esgoto |
+| `9` | Spawn | Posição inicial do jogador |
+| `P` | Portal | Saída para próximo mapa / vitória |
+
+
+### Exemplo de Mapa
+
+```
+111111111111111
+19000001000001
+10111010111101
+10J00010M00B01
+10111010111101
+10000010000001
+1111101011111P
+111111111111111
+```
+
+---
+
+## 🎨 Sistema Gráfico
+
+### Tecnologias
+
+- **OpenGL** (pipeline fixo + extensões)
+- **GLSL 1.20** para shaders
+- **GLEW** para carregar extensões
+- **GLUT/FreeGLUT** para janela e input
+
+
+
+### Sistema de Iluminação
+
+- **Luz ambiente** escura (labirinto sombrio)
+- **Lanterna do jogador** (GL_LIGHT2) — cone de luz direcional
+- **Luz indoor** (GL_LIGHT1) — iluminação pontual em áreas internas
+
+### Efeitos Visuais
+
+- **Névoa/Partículas** — partículas de fumaça no ambiente
+- **Skybox** — céu ao redor do mapa
+- **Billboards** — sprites de inimigos e itens sempre voltados para câmera
+- **Portal dimensional** — vórtice animado com coluna de luz e faíscas
+
+### Culling (Otimização)
+
+```cpp
+gCullHFovDeg      = 170.0f;  // FOV horizontal do culling
+gCullNearTiles    = 2.0f;    // Zona sem culling angular
+gCullMaxDistTiles = 20.0f;   // Distância máxima de renderização
+```
+
+---
+
+## 🎵 Sistema de Áudio
+
+- **OpenAL** para áudio 3D posicional
+- **ALUT** para carregamento de arquivos
+
+### Sons
+
+| Evento | Descrição |
+|--------|-----------|
+| Tiro | Som ao disparar a arma |
+| Recarga | Som de reload da pistola |
+| Dano no jogador | Feedback de dano recebido |
+| Dano no inimigo | Feedback de hit |
+| Ambiente | Sons atmosféricos |
 
 ---
 
 ## ⌨️ Controles
 
-### 🧭 Movimento
+### Movimento
 | Tecla | Ação |
-|-------|------|
+|:-----:|------|
 | **W** | Avançar |
-| **A** | Mover para a esquerda (strafe) |
+| **A** | Strafe esquerda |
 | **S** | Recuar |
-| **D** | Mover para a direita (strafe) |
+| **D** | Strafe direita |
 
----
+### Combate
+| Tecla/Ação | Resultado |
+|:----------:|-----------|
+| **Clique Esquerdo** | Atirar |
+| **R** | Recarregar |
+| **F** | Ligar/Desligar lanterna |
 
-### 🖱️ Visão
-| Ação | Resultado |
-|------|-----------|
-| **Mover o mouse** | Olhar em qualquer direção |
-
----
-
-### 🪟 Janelas e Sistema
+### Sistema
 | Tecla | Ação |
-|-------|------|
-| **Alt + Enter** | Alterna entre tela cheia e modo janela |
-| **ESC** | Encerra o programa |
+|:-----:|------|
+| **Mouse** | Olhar ao redor |
+| **Alt + Enter** | Alternar tela cheia |
+| **ESC** | Menu / Sair |
 
 ---
 
-## 🗺️ Criando o Mapa (Matriz em `.txt`)
+## 🏗️ Arquitetura do Código
 
-O mapa do jogo é definido por um arquivo **texto (ASCII)**, onde **cada caractere representa um tile** do mundo.  
-Cada **linha do arquivo** corresponde a uma linha do mapa, e **todas as linhas devem ter o mesmo comprimento** (mesma quantidade de colunas).
-
----
-
-### ✅ Regras importantes
-- O arquivo deve ser salvo como `.txt`
-- Cada linha representa uma “fileira” do mapa
-- Todas as linhas precisam ter o mesmo tamanho
-- Use **apenas os caracteres da legenda abaixo**
-- Deve existir **exatamente um `9`** (posição inicial do jogador)
-
----
-
-### 🧩 Legenda do mapa (originais)
-| Caractere | Significado |
-|----------|-------------|
-| `1` | Parede |
-| `0` | Chão normal (piso) |
-| `L` | Lava (tile com shader de calor) |
-| `B` | Sangue (tile com shader de distorção) |
-| `9` | Spawn do jogador *(o loader converte para `0` após ler)* |
-
----
-
-### 📌 Exemplo simples de mapa
-```txt
-1111111111
-1000000001
-10L0000B01
-1000090001
-1000000001
-1111111111
+```
+doom-cg/
+├── main.cpp              # Entry point
+├── include/
+│   ├── audio/            # Sistema de áudio
+│   ├── core/             # Game loop, player, entidades
+│   ├── graphics/         # Renderização, shaders, HUD
+│   ├── input/            # Teclado, mouse
+│   ├── level/            # Carregamento de mapas
+│   └── utils/            # Assets, utilidades
+├── src/                  # Implementações (.cpp)
+├── shaders/              # Arquivos GLSL
+├── maps/                 # Arquivos de mapa (.txt)
+└── assets/               # Texturas, áudio
 ```
 
 ---
 
-### 👾 Inimigos no mapa
+## 🚀 Compilação e Execução
 
-Os inimigos são definidos diretamente no arquivo do mapa por letras.  
-Esses caracteres **não representam blocos sólidos**, servem apenas como ponto de spawn.
+### Dependências (Linux)
 
-| Caractere | Tipo de inimigo |
-|----------|----------------|
-| `J` | Inimigo tipo J |
-| `T` | Inimigo tipo T |
-| `M` | Inimigo tipo M |
-| `K` | Inimigo tipo K |
-| `G` | Inimigo tipo G |
+```bash
+# Debian/Ubuntu
+sudo apt install g++ make freeglut3-dev libglew-dev libglu1-mesa-dev libopenal-dev libalut-dev
 
-Após o carregamento do mapa, o caractere é convertido para piso e a entidade é criada separadamente.
-
----
-
-### 🧰 Itens no mapa
-
-Os itens também são definidos diretamente no mapa e funcionam como pontos de spawn.
-
-| Caractere | Item | Descrição |
-|----------|-----|-----------|
-| `H` | Health | Recupera vida do jogador |
-| `A` | Ammo | Recupera munição |
-
-- não geram geometria,
-- não bloqueiam passagem,
-- não participam da colisão do cenário,
-- são renderizados como sprites (billboards).
-
----
-
-### 🔍 Parâmetros globais do raycast (culling)
-
-```cpp
-static float gCullHFovDeg      = 170.0f;
-static float gCullNearTiles    = 2.0f;
-static float gCullMaxDistTiles = 20.0f;
+# Arch Linux
+sudo pacman -S gcc make freeglut glew glu openal freealut
 ```
 
-gCullHFovDeg
-Define o campo de visão horizontal (em graus) usado no culling. Objetos fora desse ângulo, no plano XZ, não são renderizados.
+### Build
 
-gCullNearTiles
-Define uma zona próxima ao jogador (em tiles) onde o culling angular é desativado, garantindo que objetos muito próximos sempre sejam desenhados.
+```bash
+# Compilar
+make
 
-gCullMaxDistTiles
-Define a distância máxima de renderização (em tiles). Objetos além desse raio não são renderizados. Se for 0, não há limite de distância.
+# Compilar e executar
+make run
+
+# Limpar build
+make clean
+```
+
+### Estrutura do Build
+
+O Makefile gera uma pasta `build/` auto-contida com:
+- Executável `DoomLike`
+- Cópia de `assets/`, `maps/`, `shaders/`
+
+---
+
+## 📋 Fluxo do Jogo
+
+```
+┌──────────────┐
+│ MENU INICIAL │
+└──────┬───────┘
+       │ Iniciar
+       ▼
+┌──────────────┐     Portal      ┌──────────────┐     Portal      ┌──────────────┐
+│    MAPA 1    │ ──────────────► │    MAPA 2    │ ──────────────► │    MAPA 3    │
+└──────┬───────┘                 └──────┬───────┘                 └──────┬───────┘
+       │                                │                                │
+       │ Morte                          │ Morte                          │ Portal
+       ▼                                ▼                                ▼
+┌──────────────┐                 ┌──────────────┐                 ┌──────────────┐
+│  GAME OVER   │                 │  GAME OVER   │                 │   VITÓRIA!   │
+└──────────────┘                 └──────────────┘                 └──────────────┘
+```
+
+---
+
+## 👥 Créditos
+
+Projeto desenvolvido para a disciplina de Computação Gráfica.
 
