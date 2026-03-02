@@ -31,7 +31,7 @@ void keyboard(unsigned char key, int, int)
     if (state == GameState::GAME_OVER)
     {
         if (key == 13)
-        { // ENTER reinicia
+        { // ENTER reinicia e garante mapa limpo
             gameReset();
             gameSetState(GameState::JOGANDO);
         }

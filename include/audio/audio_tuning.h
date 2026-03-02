@@ -21,6 +21,9 @@ namespace AudioTuning
     static constexpr float PUMP_GAIN = 0.85f; // som do "pump/click" do shotgun
     static constexpr float PUMP_TIME = 0.75f; // segundos após o tiro para tocar o pump
 
+    // ganh o para efeitos de coleta (ammunition/bateria)
+    static constexpr float PICKUP_GAIN = 1.00f;
+
     static constexpr float DAMAGE_GAIN = 1.00f;   // hurt do player
     static constexpr float GRUNT_GAIN = 1.20f;    // grunhido do player
     static constexpr int GRUNT_EVERY_N_SHOTS = 5; // a cada N tiros, toca um grunt

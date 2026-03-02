@@ -46,6 +46,22 @@ bool loadAssets(GameAssets &a)
     // corpse texture for dead enemies
     a.texEnemiesDead = carregaTextura("assets/enemies/dead.png");
 
+    // --- BOSS 0 ---
+    a.texBosses[0] = carregaTextura("assets/enemies/boss.png");
+    a.texBossesRage[0] = carregaTextura("assets/enemies/bossRage.png");
+    a.texBossesDamage[0] = carregaTextura("assets/enemies/bossRageDamage.png");
+    // --- BOSS 1 ---
+    a.texBosses[1] = carregaTextura("assets/enemies/boss.png");
+    a.texBossesRage[1] = carregaTextura("assets/enemies/bossRage.png");
+    a.texBossesDamage[1] = carregaTextura("assets/enemies/bossRageDamage.png");
+    // --- BOSS 2 ---
+    a.texBosses[2] = carregaTextura("assets/enemies/boss.png");
+    a.texBossesRage[2] = carregaTextura("assets/enemies/bossRage.png");
+    a.texBossesDamage[2] = carregaTextura("assets/enemies/bossRageDamage.png");
+
+    // corpse texture for dead bosses
+    a.texBossesDead = carregaTextura("assets/enemies/bossDead.png");
+
     a.texHealthOverlay = carregaTextura("assets/heal.png");
     a.texGunDefault = carregaTextura("assets/gun_default.png");
     a.texGunFire1 = carregaTextura("assets/gun_fire1.png");
@@ -73,7 +89,9 @@ bool loadAssets(GameAssets &a)
         !a.texEnemiesRage[0] || !a.texEnemiesDamage[0] || !a.texEnemies[1] ||
         !a.texEnemiesRage[1] || !a.texEnemiesDamage[1] || !a.texEnemies[2] ||
         !a.texEnemiesRage[2] || !a.texEnemiesDamage[2] || !a.texEnemiesDead || !a.texAguaEsgoto || !a.texGunHUD || !a.texLanternHUD || !a.texHudFundo || !a.texMenuBG ||
-        !a.texBattery || !a.texPistolAmmo)
+        !a.texBattery || !a.texPistolAmmo || !a.texBosses[0] || !a.texBossesRage[0] || !a.texBossesDamage[0] ||
+        !a.texBosses[1] || !a.texBossesRage[1] || !a.texBossesDamage[1] ||
+        !a.texBosses[2] || !a.texBossesRage[2] || !a.texBossesDamage[2] || !a.texBossesDead)
     {
         std::printf("ERRO: falha ao carregar algum asset (textura/shader).\n");
         return false;

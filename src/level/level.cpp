@@ -1,9 +1,10 @@
 #include "level/level.h"
 #include "core/config.h" 
+#include "core/entities.h"  // for ENEMY_START_HP
 #include <cstdio>
 
 // Configurações básicas para spawn
-static const float ENEMY_START_HP = 100.0f;
+// (constant moved to include/core/entities.h)
 
 bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
 {
@@ -51,11 +52,14 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
             else if (c == 'C') enemyType = 2; // Inimigo Tipo 3 
             else if (c == 'G') enemyType = 3; // Inimigo Tipo 4
             else if (c == 'K') enemyType = 4; // Inimigo Tipo 5
+            else if (c == 'Z') enemyType = 5; // Boss 1
+            else if (c == 'Y') enemyType = 6; // Boss 2
+            else if (c == 'X') enemyType = 7; // Boss 3
 
             if (enemyType != -1) // Se achou qualquer um dos inimigos
             {
                 Enemy e;
-                e.type = enemyType; // <--- IMPORTANTE: Define qual a skin dele (0, 1 ou 2)
+                e.type = enemyType;
 
                 e.x = wx;
                 e.z = wz;
@@ -65,12 +69,17 @@ bool loadLevel(Level &lvl, const char *mapPath, float tileSize)
                 e.startZ = wz;
                 e.respawnTimer = 0.0f;
 
-                e.hp = ENEMY_START_HP;
+                // Bosses têm mais HP do que inimigos normais
+                if (enemyType >= 5)
+                    e.hp = BOSS_START_HP;
+                else
+                    e.hp = ENEMY_START_HP;
+
                 e.state = STATE_IDLE;
                 e.animFrame = 0;
                 e.animTimer = 0;
                 e.hurtTimer = 0.0f;
-                e.attackCooldown = 0.0f; // Garante que começa zerado
+                e.attackCooldown = 0.0f;
 
                 lvl.enemies.push_back(e);
             }

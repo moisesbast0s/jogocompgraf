@@ -197,6 +197,13 @@ void audioInit(AudioSystem& a, const Level& level) {
     a.bufGrunt = a.engine.loadWav("assets/audio/grunt_mono.wav");
     if (!a.bufGrunt) a.bufGrunt = a.engine.loadWav("assets/audio/grunt.wav");
 
+    // pickup sounds (no mono/stereo fallback needed, files already mono)
+    a.bufAmmoPickup = a.engine.loadWav("assets/audio/ammo_sound.wav");
+    if (!a.bufAmmoPickup) a.bufAmmoPickup = a.engine.loadWav("assets/audio/ammo_sound.wav");
+
+    a.bufBatteryPickup = a.engine.loadWav("assets/audio/battery_sound.wav");
+    if (!a.bufBatteryPickup) a.bufBatteryPickup = a.engine.loadWav("assets/audio/battery_sound.wav");
+
     // Ambient (2D loop)
     if (a.bufAmbient) {
         a.srcAmbient = a.engine.createSource(a.bufAmbient, true);
@@ -289,6 +296,23 @@ void audioInit(AudioSystem& a, const Level& level) {
             alSourcei(a.srcGrunt, AL_SOURCE_RELATIVE, AL_TRUE);
             alSource3f(a.srcGrunt, AL_POSITION, 0.0f, 0.0f, 0.0f);
             a.engine.setSourceGain(a.srcGrunt, AudioTuning::MASTER * AudioTuning::GRUNT_GAIN);
+        }
+    }
+
+    // Pickup sources (2D one-shot)
+    if (a.bufAmmoPickup) {
+        a.srcAmmoPickup = a.engine.createSource(a.bufAmmoPickup, false);
+        if (a.srcAmmoPickup) {
+            alSourcei(a.srcAmmoPickup, AL_SOURCE_RELATIVE, AL_TRUE);
+            a.engine.setSourceGain(a.srcAmmoPickup, AudioTuning::MASTER * AudioTuning::PICKUP_GAIN);
+        }
+    }
+
+    if (a.bufBatteryPickup) {
+        a.srcBatteryPickup = a.engine.createSource(a.bufBatteryPickup, false);
+        if (a.srcBatteryPickup) {
+            alSourcei(a.srcBatteryPickup, AL_SOURCE_RELATIVE, AL_TRUE);
+            a.engine.setSourceGain(a.srcBatteryPickup, AudioTuning::MASTER * AudioTuning::PICKUP_GAIN);
         }
     }
 
@@ -474,6 +498,18 @@ void audioPlayHurt(AudioSystem& a) {
     if (!a.ok || a.srcHurt == 0) return;
     a.engine.stop(a.srcHurt);
     a.engine.play(a.srcHurt);
+}
+
+void audioPlayAmmoPickup(AudioSystem& a) {
+    if (!a.ok || a.srcAmmoPickup == 0) return;
+    a.engine.stop(a.srcAmmoPickup);
+    a.engine.play(a.srcAmmoPickup);
+}
+
+void audioPlayBatteryPickup(AudioSystem& a) {
+    if (!a.ok || a.srcBatteryPickup == 0) return;
+    a.engine.stop(a.srcBatteryPickup);
+    a.engine.play(a.srcBatteryPickup);
 }
 
 void audioPlayKillAt(AudioSystem& a, float x, float z) {

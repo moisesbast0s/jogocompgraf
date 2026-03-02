@@ -36,6 +36,8 @@ struct AudioSystem {
 
     ALuint bufEnemy = 0;
     ALuint bufEnemyScream = 0;
+    ALuint bufAmmoPickup = 0;      // new buffer
+    ALuint bufBatteryPickup = 0;   // new buffer
 
     // Sources
     ALuint srcAmbient = 0;
@@ -45,6 +47,8 @@ struct AudioSystem {
     ALuint srcHurt = 0;
     ALuint srcClickReload = 0;
     ALuint srcKill = 0;
+    ALuint srcAmmoPickup = 0;      // new source
+    ALuint srcBatteryPickup = 0;   // new source
 
     ALuint srcLava = 0;
     bool lavaPlaying = false;
@@ -85,6 +89,10 @@ void audioPlayReload(AudioSystem& a);
 void audioPlayPumpClick(AudioSystem& a);
 void audioPlayHurt(AudioSystem& a);
 void audioPlayKillAt(AudioSystem& a, float x, float z);
+
+// pickup sounds
+void audioPlayAmmoPickup(AudioSystem& a);
+void audioPlayBatteryPickup(AudioSystem& a);
 
 // Utilitário (se você quiser tocar "grunhido" a cada N tiros)
 void audioOnPlayerShot(AudioSystem& a);

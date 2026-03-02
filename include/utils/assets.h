@@ -37,6 +37,12 @@ struct GameAssets
     GLuint texEnemiesDamage[5] = {0, 0, 0, 0, 0};
     GLuint texEnemiesDead = 0;               // corpse sprite
 
+    // Boss textures (3 bosses)
+    GLuint texBosses[3]       = {0, 0, 0};
+    GLuint texBossesRage[3]   = {0, 0, 0};
+    GLuint texBossesDamage[3] = {0, 0, 0};
+    GLuint texBossesDead = 0;                // boss corpse sprite
+
     // shaders
     GLuint progSangue = 0;
     GLuint progLava = 0;

@@ -53,10 +53,6 @@ void updateEntities(float dt)
 
     for (auto& en : lvl.enemies)
     {
-        // once an enemy is killed we leave it dead forever; the old logic
-        // treated its map position as a "spawn point" and reset it after
-        // respawnTimer elapsed.  to make each enemy appear only once we
-        // simply skip dead ones without resetting their state.
         if (en.state == STATE_DEAD)
         {
             continue;
@@ -71,25 +67,39 @@ void updateEntities(float dt)
         switch (en.state)
         {
         case STATE_IDLE:
-            if (dist < ENEMY_VIEW_DIST) en.state = STATE_CHASE;
+        {
+            if (en.type >= 5) {
+                en.state = STATE_CHASE;
+            } else {
+                float viewDist = ENEMY_VIEW_DIST;
+                if (dist < viewDist) en.state = STATE_CHASE;
+            }
             break;
+        }
 
         case STATE_CHASE:
-            if (dist < ENEMY_ATTACK_DIST)
+        {
+            float atkDist = (en.type >= 5) ? BOSS_ATTACK_DIST : ENEMY_ATTACK_DIST;
+            float speed = (en.type >= 5) ? BOSS_SPEED : ENEMY_SPEED;
+
+            if (dist < atkDist)
             {
                 en.state = STATE_ATTACK;
                 en.attackCooldown = 0.5f;
             }
-            else if (dist > ENEMY_VIEW_DIST * 1.5f)
+            else if (en.type < 5)
             {
-                en.state = STATE_IDLE;
+                float viewDist = ENEMY_VIEW_DIST;
+                if (dist > viewDist * 1.5f)
+                {
+                    en.state = STATE_IDLE;
+                }
             }
-            else
-            {
+            if (dist >= atkDist) {
                 float dirX = dx / dist;
                 float dirZ = dz / dist;
 
-                float moveStep = ENEMY_SPEED * dt;
+                float moveStep = speed * dt;
 
                 float nextX = en.x + dirX * moveStep;
                 if (isWalkable(nextX, en.z)) en.x = nextX;
@@ -98,9 +108,13 @@ void updateEntities(float dt)
                 if (isWalkable(en.x, nextZ)) en.z = nextZ;
             }
             break;
+        }
 
         case STATE_ATTACK:
-            if (dist > ENEMY_ATTACK_DIST)
+        {
+            float atkDist = (en.type >= 5) ? BOSS_ATTACK_DIST : ENEMY_ATTACK_DIST;
+
+            if (dist > atkDist)
             {
                 en.state = STATE_CHASE;
             }
@@ -109,13 +123,15 @@ void updateEntities(float dt)
                 en.attackCooldown -= dt;
                 if (en.attackCooldown <= 0.0f)
                 {
-                    g.player.health -= 10;
+                    int dmg = (en.type >= 5) ? BOSS_ATTACK_DMG : 10;
+                    g.player.health -= dmg;
                     en.attackCooldown = 1.0f;
                     g.player.damageAlpha = 1.0f;
                     audioPlayHurt(audio);
                 }
             }
             break;
+        }
 
         default:
             break;
@@ -150,12 +166,14 @@ void updateEntities(float dt)
                 item.respawnTimer = 999999.0f;
                 g.player.reserveAmmo += 7;
                 g.player.spareMagazines += 1;
+                audioPlayAmmoPickup(audio);
             }
             else if (item.type == ITEM_PISTOL_AMMO)
             {
                 item.respawnTimer = 999999.0f;
                 g.player.reserveAmmo += 7;
                 g.player.spareMagazines += 1;
+                audioPlayAmmoPickup(audio);
             }
             else if (item.type == ITEM_BATTERY)
             {
@@ -163,6 +181,7 @@ void updateEntities(float dt)
                 flashlightBattery += 50.0f;
                 if (flashlightBattery > 100.0f) flashlightBattery = 100.0f;
                 flashlightOn = true;
+                audioPlayBatteryPickup(audio);
             }
         }
     }

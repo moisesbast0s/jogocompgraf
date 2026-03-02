@@ -483,7 +483,8 @@ void drawLevel(const MapLoader &map, float px, float pz, float dx, float dz, con
 
             char c = data[z][x];
             bool isEnemy = (c == 'J' || c == 'T' || c == 'C' || c == 'K' ||
-                            c == 'G' || c == 'E' || c == 'F' || c == 'I');
+                            c == 'G' || c == 'E' || c == 'F' || c == 'I' ||
+                            c == 'Z' || c == 'Y' || c == 'X');  // boss markers
             bool isItem = (c == 'B' || c == 'M' || c == 'H' || c == 'A');
 
             if (isEnemy) {
@@ -614,11 +615,17 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
     {
         if (en.state == STATE_DEAD)
         {
-            if (r.texEnemiesDead != 0 &&
-                isVisibleXZ(en.x, en.z, camX, camZ, hasFwd, fwdx, fwdz))
+            if (isVisibleXZ(en.x, en.z, camX, camZ, hasFwd, fwdx, fwdz))
             {
-
-                drawSprite(en.x, en.z, 2.5f, 2.5f, r.texEnemiesDead, camX, camZ, -0.7f);
+                // Use appropriate dead texture
+                GLuint deadTex = (en.type >= 5) ? r.texBossesDead : r.texEnemiesDead;
+                if (deadTex != 0)
+                {
+                    float w = (en.type >= 5) ? 4.0f : 2.5f;  // bosses are larger
+                    float h = (en.type >= 5) ? 4.0f : 2.5f;
+                    float yOff = (en.type >= 5) ? -0.8f : -0.7f;
+                    drawSprite(en.x, en.z, w, h, deadTex, camX, camZ, yOff);
+                }
             }
             continue;
         }
@@ -626,17 +633,41 @@ void drawEntities(const std::vector<Enemy> &enemies, const std::vector<Item> &it
         if (!isVisibleXZ(en.x, en.z, camX, camZ, hasFwd, fwdx, fwdz))
             continue;
 
-        int t = (en.type < 0 || en.type > 4) ? 0 : en.type;
-
         GLuint currentTex;
-        if (en.hurtTimer > 0.0f)
-            currentTex = r.texEnemiesDamage[t];
-        else if (en.state == STATE_CHASE || en.state == STATE_ATTACK)
-            currentTex = r.texEnemiesRage[t];
-        else
-            currentTex = r.texEnemies[t];
+        float spriteW, spriteH;
 
-        drawSprite(en.x, en.z, 2.5f, 2.5f, currentTex, camX, camZ, -0.2f);
+        // Bosses têm tipos 5, 6, 7; os outros são inimigos normais
+        if (en.type >= 5)
+        {
+            // Boss sprites
+
+            if (en.hurtTimer > 0.0f)
+                currentTex = r.texBossesDamage[bossIdx];
+            else if (en.state == STATE_CHASE || en.state == STATE_ATTACK)
+                currentTex = r.texBossesRage[bossIdx];
+            else
+                currentTex = r.texBosses[bossIdx];
+
+            spriteW = 4.0f;  // Bosses are larger
+            spriteH = 4.0f;
+        }
+        else
+        {
+            // Regular enemy sprites
+            int t = (en.type < 0 || en.type > 4) ? 0 : en.type;
+
+            if (en.hurtTimer > 0.0f)
+                currentTex = r.texEnemiesDamage[t];
+            else if (en.state == STATE_CHASE || en.state == STATE_ATTACK)
+                currentTex = r.texEnemiesRage[t];
+            else
+                currentTex = r.texEnemies[t];
+
+            spriteW = 2.5f;
+            spriteH = 2.5f;
+        }
+
+        drawSprite(en.x, en.z, spriteW, spriteH, currentTex, camX, camZ, -0.5f);
     }
 
     glEnable(GL_LIGHTING);

@@ -1,8 +1,10 @@
 #include "core/player.h"
 #include "core/game.h"
+#include "core/entities.h"  // for Item / ITEM_*
 #include "core/camera.h"
 #include "audio/audio_system.h"
 #include <cmath>
+#include <cstdlib> // rand()
 
 constexpr int MAX_MAGAZINE = 7;
 
@@ -134,7 +136,18 @@ void playerTryAttack()
         {
             en.state = STATE_DEAD;
             en.respawnTimer = 15.0f;
-            // no item drop
+
+            // 15% chance to drop a pickup (ammo or battery)
+            if ((std::rand() % 100) < 15) {
+                float dropDist = 0.8f; // how far from enemy center
+                Item it;
+                it.x = en.x + dirX * dropDist;
+                it.z = en.z + dirZ * dropDist;
+                it.type = (std::rand() % 2 == 0) ? ITEM_PISTOL_AMMO : ITEM_BATTERY;
+                it.active = true;
+                it.respawnTimer = 0.0f;
+                lvl.items.push_back(it);
+            }
         }
     }
 }

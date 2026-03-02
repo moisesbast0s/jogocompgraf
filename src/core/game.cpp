@@ -5,6 +5,7 @@
 
 #include "core/game_enums.h"
 #include "core/game_state.h"
+#include <ctime>
 
 #include "core/game.h"
 
@@ -94,6 +95,9 @@ bool gameInit(const char *mapPath)
     if (!loadAssets(gAssets))
         return false;
 
+    // seed RNG for item drops and other randomness
+    std::srand((unsigned)std::time(nullptr));
+
     g.r.texChao = gAssets.texChao;
     g.r.texParede = gAssets.texParede;
     g.r.texSangue = gAssets.texSangue;
@@ -129,6 +133,14 @@ bool gameInit(const char *mapPath)
     g.r.texEnemiesDead = gAssets.texEnemiesDead;
     g.r.texAguaEsgoto = gAssets.texAguaEsgoto;
 
+    for (int i = 0; i < 3; i++)
+    {
+        g.r.texBosses[i] = gAssets.texBosses[i];
+        g.r.texBossesRage[i] = gAssets.texBossesRage[i];
+        g.r.texBossesDamage[i] = gAssets.texBossesDamage[i];
+    }
+    g.r.texBossesDead = gAssets.texBossesDead;
+
     g.r.texHealth = gAssets.texHealth;
     g.r.texAmmo = gAssets.texAmmo;
     g.r.texBattery = gAssets.texBattery;
@@ -159,21 +171,37 @@ bool gameInit(const char *mapPath)
     return true;
 }
 
-// Reinicia o jogo
+// Reinicia o jogo (volta ao início do mapa atual)
+// Esta função é chamada tanto no menu inicial quanto após um GAME OVER.
 void gameReset()
 {
-    g.player.health = 100;
+    // recarrega o mapa inteiro para apagar inimigos/itens mortos
+    gameLoadMap(gMapList[gCurrentMap]);
+
+    // reseta timers/flags globais usados por fases/completar
+    gPhaseNotifyTimer = 0.0f;
+    gPhaseNotifyNum = 0;
+    gGameComplete = false;
+    gGameCompleteTimer = 0.0f;
+
+    // tempo do jogo usado pelo HUD/menus
+    g.time = 0.0f;
+
+    // reseta estado do jogador
+    g.player = PlayerState{};
+    g.player.health = 100;          // redundante com PlayerState{} mas claro
     g.player.currentAmmo = 7;
     g.player.reserveAmmo = 21;
-
     g.player.spareMagazines = 3;
-
     g.player.damageAlpha = 0.0f;
     g.player.healthAlpha = 0.0f;
 
+    // arma inicial
+    g.weapon = WeaponAnim{};
     g.weapon.state = WeaponState::W_IDLE;
     g.weapon.timer = 0.0f;
-    // Respawna o jogador
+
+    // respawna o jogador após o reload de mapa
     applySpawn(gLevel, camX, camZ);
 }
 

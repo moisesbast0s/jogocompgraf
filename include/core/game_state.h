@@ -32,6 +32,11 @@ struct RenderAssets
     GLuint texEnemiesDead = 0; // corpse sprite copied from assets
     GLuint texAguaEsgoto = 0; // sewage water texture
 
+    GLuint texBosses[3] = {0};
+    GLuint texBossesRage[3] = {0};
+    GLuint texBossesDamage[3] = {0};
+    GLuint texBossesDead = 0; // boss corpse sprite
+
     GLuint texHealth = 0;
     GLuint texAmmo = 0;
     GLuint texBattery = 0;
